@@ -1,0 +1,58 @@
+{
+  "name": "@moon/backend",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": {
+    "name": "Mallory SCOTTON",
+    "email": "mscotton.pro@gmail.com",
+    "url": "https://github.com/mallory-scotton"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/mallory-scotton/moon",
+  "main": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mallory-scotton/moon",
+    "directory": "apps/backend"
+  },
+  "bugs": {
+    "url": "https://github.com/mallory-scotton/moon/issues"
+  },
+  "scripts": {
+    "build": "tsup src --dts",
+    "build:fast": "tsup src",
+    "dev": "pnpm build:fast --watch",
+    "dev:run": "tsup src --watch --onSuccess \"node dist/index.js\"",
+    "start": "pnpm build && node dist/index.js",
+    "start:fast": "pnpm build:fast && node dist/index.js",
+    "clean": "rimraf dist .turbo",
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
+  },
+  "tsup": {
+    "clean": true,
+    "target": "ES2020",
+    "format": [
+      "cjs",
+      "esm"
+    ]
+  },
+  "dependencies": {
+    "@moon/database": "workspace:*",
+    "@moon/server": "workspace:*",
+    "@moon/types": "workspace:*",
+    "crypto": "^1.0.1",
+    "express": "^5.1.0",
+    "joi": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3"
+  }
+}

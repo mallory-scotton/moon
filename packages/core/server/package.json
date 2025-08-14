@@ -1,0 +1,70 @@
+{
+  "name": "@moon/server",
+  "version": "1.0.0",
+  "description": "The Moon HTPC Server",
+  "keywords": [
+    "server"
+  ],
+  "author": {
+    "name": "Mallory SCOTTON",
+    "email": "mscotton.pro@gmail.com",
+    "url": "https://github.com/mallory-scotton"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/mallory-scotton/moon",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mallory-scotton/moon",
+    "directory": "packages/core/server"
+  },
+  "bugs": {
+    "url": "https://github.com/mallory-scotton/moon/issues"
+  },
+  "scripts": {
+    "build": "tsup src --dts",
+    "build:fast": "tsup src",
+    "dev": "pnpm build:fast --watch",
+    "clean": "rimraf dist .turbo",
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
+  },
+  "tsup": {
+    "clean": true,
+    "target": "ES2020",
+    "format": [
+      "cjs",
+      "esm"
+    ]
+  },
+  "devDependencies": {
+    "@types/compression": "^1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3"
+  },
+  "dependencies": {
+    "@moon/config": "workspace:*",
+    "@moon/logger": "workspace:*",
+    "@moon/types": "workspace:*",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "portfinder": "^1.0.37"
+  }
+}

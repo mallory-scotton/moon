@@ -1,0 +1,54 @@
+{
+  "name": "moon",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": {
+    "name": "Mallory SCOTTON",
+    "email": "mscotton.pro@gmail.com",
+    "url": "https://github.com/mallory-scotton"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mallory-scotton/moon"
+  },
+  "private": true,
+  "scripts": {
+    "create": "plop",
+    "create:pck": "plop package",
+    "create:cmp": "plop component",
+    "test": "turbo test",
+    "dev": "turbo dev",
+    "dev:story": "turbo dev --filter=@moon/storybook",
+    "start:backend": "pnpm -F @moon/backend start",
+    "start:backend:fast": "pnpm -F @moon/backend start:fast"
+  },
+  "packageManager": "pnpm@10.14.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@sequelize/sqlite3",
+      "sqlite3",
+      "esbuild",
+      "unrs-resolver"
+    ],
+    "ignoredBuiltDependencies": [
+      "esbuild",
+      "unrs-resolver"
+    ]
+  },
+  "devDependencies": {
+    "@storybook/react": "^9.1.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.2.1",
+    "cross-env": "^10.0.0",
+    "jest": "^30.0.5",
+    "plop": "^4.0.1",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.4.1",
+    "tsup": "^8.5.0",
+    "turbo": "^2.5.5",
+    "typescript": "^5.9.2"
+  }
+}

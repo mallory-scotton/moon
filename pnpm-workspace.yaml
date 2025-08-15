@@ -6,3 +6,4 @@ packages:
   - packages/utils/*
   - packages/integrations/*
   - packages/media/*
+  - packages/streaming/*

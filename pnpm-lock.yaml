@@ -94,6 +94,14 @@ importers:
         specifier: 7.0.0-alpha.46
         version: 7.0.0-alpha.46
 
+  packages/core/downloader: {}
+
+  packages/core/notifications: {}
+
+  packages/core/scheduler: {}
+
+  packages/core/search: {}
+
   packages/core/server:
     dependencies:
       '@moon/config':
@@ -130,6 +138,18 @@ importers:
       '@types/express':
         specifier: ^5.0.3
         version: 5.0.3
+
+  packages/integrations/ffmpeg:
+    dependencies:
+      '@moon/config':
+        specifier: workspace:*
+        version: link:../../core/config
+
+  packages/integrations/ffprobe:
+    dependencies:
+      '@moon/config':
+        specifier: workspace:*
+        version: link:../../core/config
 
   packages/integrations/tmdb:
     dependencies:

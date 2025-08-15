@@ -3,7 +3,7 @@
  * @description This interface defines the structure for options that can be passed with an API request.
  */
 export interface ApiRequestOptions {
-  params?: Record<string, string | number | boolean>;
+  params?: Record<string, any>;
   headers?: Record<string, string>;
   body?: unknown;
 }

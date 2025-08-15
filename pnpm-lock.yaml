@@ -144,12 +144,18 @@ importers:
       '@moon/config':
         specifier: workspace:*
         version: link:../../core/config
+      child_process:
+        specifier: ^1.0.2
+        version: 1.0.2
 
   packages/integrations/ffprobe:
     dependencies:
       '@moon/config':
         specifier: workspace:*
         version: link:../../core/config
+      child_process:
+        specifier: ^1.0.2
+        version: 1.0.2
 
   packages/integrations/tmdb:
     dependencies:
@@ -1330,6 +1336,9 @@ packages:
   check-error@2.1.1:
     resolution: {integrity: sha512-OAlb+T7V4Op9OwdkjmguYRqncdlx5JiofwOAUkmTF+jNdHwzTaTs4sRAGpzLF3oOz5xAyDGrPgeIDFQmDOTiJw==}
     engines: {node: '>= 16'}
+
+  child_process@1.0.2:
+    resolution: {integrity: sha512-Wmza/JzL0SiWz7kl6MhIKT5ceIlnFPJX+lwUGj7Clhy5MMldsSoJR0+uvRzOS5Kv45Mq7t1PoE8TsOA9bzvb6g==}
 
   chokidar@4.0.3:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
@@ -4726,6 +4735,8 @@ snapshots:
   chardet@0.7.0: {}
 
   check-error@2.1.1: {}
+
+  child_process@1.0.2: {}
 
   chokidar@4.0.3:
     dependencies:

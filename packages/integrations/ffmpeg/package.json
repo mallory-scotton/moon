@@ -55,7 +55,8 @@
       "esm"
     ]
   },
-   "dependencies": {
-    "@moon/config": "workspace:*"
+  "dependencies": {
+    "@moon/config": "workspace:*",
+    "child_process": "^1.0.2"
   }
 }

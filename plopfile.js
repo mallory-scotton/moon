@@ -13,7 +13,7 @@
 const GENERATORS = ['component', 'package'];
 
 /** Constant containing the list of possible workspaces */
-const WORKSPACES = ['components', 'core', 'utils', 'media', 'integrations'];
+const WORKSPACES = ['components', 'core', 'utils', 'media', 'integrations', 'streaming'];
 
 /** Constant for default workspaces for each generators */
 const DEFAULT_WORKSPACES = {

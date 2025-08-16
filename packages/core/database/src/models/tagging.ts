@@ -7,13 +7,11 @@ import {
   CreationOptional,
   NonAttribute
 } from '@sequelize/core';
-import { Attribute, AutoIncrement, PrimaryKey, Table, BelongsTo, NotNull } from '@sequelize/core/decorators-legacy';
-import { MetadataItem } from './metadata-item';
-import { Tag } from './tag';
+import { Attribute, AutoIncrement, PrimaryKey, Table, NotNull } from '@sequelize/core/decorators-legacy';
 
 /**
- * @brief
- * @description
+ * @brief Tagging model
+ * @description Represents the association between tags and metadata items.
  */
 @Table({
   tableName: 'taggings',

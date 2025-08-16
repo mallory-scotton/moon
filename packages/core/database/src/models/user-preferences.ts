@@ -76,7 +76,7 @@ export class UserPreferences extends Model<InferAttributes<UserPreferences>, Inf
   @Attribute(DataTypes.INTEGER)
   @Unique
   @NotNull
-  declare user_id: number;
+  declare user_id: CreationOptional<number>;
 
   /** Defined by {@link User.userPreference} */
   declare user?: NonAttribute<User>;

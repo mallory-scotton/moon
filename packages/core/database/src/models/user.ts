@@ -52,8 +52,11 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
     return !!this.hashed_password;
   }
 
-  @HasOne(() => UserPreferences, { foreignKey: 'user_id', inverse: 'user' })
-  declare preferences: NonAttribute<UserPreferences>;
+  @HasOne(() => UserPreferences, {
+    foreignKey: 'user_id',
+    inverse: 'user'
+  })
+  declare preferences?: NonAttribute<UserPreferences>;
 
   /** Association: User.hasOne(UserPreferences, { foreignKey: 'user_id' }) */
   declare getPreferences: HasOneGetAssociationMixin<UserPreferences>;

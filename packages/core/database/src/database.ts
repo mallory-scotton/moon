@@ -5,7 +5,7 @@ import { DatabaseOptions } from './types';
 import { Logger } from '@moon/logger';
 import path from 'path';
 import fs from 'fs';
-import { User, UserPreferences } from './models';
+import * as Models from './models';
 import { MOON_DATABASE_PATH } from '@moon/config';
 
 /**
@@ -67,7 +67,7 @@ export class Database {
       dialect: SqliteDialect,
       storage: this._options.location,
       logging: false,
-      models: [User, UserPreferences]
+      models: [...Object.values(Models)]
     });
   }
 

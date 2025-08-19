@@ -67,6 +67,20 @@ interface MoonServerConfig {
 }
 
 /**
+ * @brief Moon vault configuration
+ * @description This is the configuration object for the Moon vault.
+ */
+interface MoonVaultConfig {
+  /**
+   * @brief Moon vault encryption key
+   * @description This defines the encryption key used for the Moon vault.
+   * @default 'MOON_DEFAULT_VAULT_KEY'
+   */
+  encryptionKey: string;
+
+}
+
+/**
  * @brief Moon configuration
  * @description This is the configuration object for the Moon application.
  */
@@ -82,6 +96,12 @@ export interface MoonConfig {
    * @description This is the configuration object for the Moon logging.
    */
   logging: MoonLoggingConfig;
+
+  /**
+   * @brief Moon vault configuration
+   * @description This is the configuration object for the Moon vault.
+   */
+  vault: MoonVaultConfig;
 
   /**
    * @brief Moon application configuration

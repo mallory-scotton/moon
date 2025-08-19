@@ -10,3 +10,4 @@ export {
   MOON_LOGS_PATH
 } from './constants';
 export { createDirectoryTree } from './directory';
+export { encryptedConfig } from './encrypted-config';

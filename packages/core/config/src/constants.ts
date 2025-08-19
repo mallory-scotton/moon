@@ -52,6 +52,9 @@ export const DEFAULT_MOON_CONFIG: Required<MoonConfig> = {
     colors: true,
     format: 'text'
   },
+  vault: {
+    encryptionKey: 'MOON_DEFAULT_VAULT_KEY'
+  },
   save: () => {
     // Create the config directory if it doesn't exist
     if (!fs.existsSync(path.dirname(MOON_CONFIG_PATH))) {
@@ -99,7 +102,7 @@ export const MOON_APPLICATION_TREE = {
     // Documentation directory
     docs: {
       'API': {
-        V1: {},
+        'V1': {},
         'API.MD': ''
       },
       'GUIDES': {},

@@ -9,6 +9,10 @@
       "cache": false
     },
     "typecheck": {},
-    "lint": {}
-  }
+    "lint": {},
+    "test": {
+      "dependsOn": ["^build"]
+    }
+  },
+  "globalDependencies": ["tsconfig.json"]
 }

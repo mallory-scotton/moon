@@ -1,6 +1,8 @@
 /** Dependencies */
 import type { ServerEventMap } from './server';
 import type { DatabaseEventMap } from './database';
+import type { ScannerEventMap } from './scanner';
+import type { DownloaderEventMap } from './downloader';
 
 /**
  * @brief Event Map
@@ -10,6 +12,10 @@ export type EventMap = {
   [K in keyof ServerEventMap as `server:${K & string}`]: ServerEventMap[K];
 } & {
   [K in keyof DatabaseEventMap as `database:${K & string}`]: DatabaseEventMap[K];
+} & {
+  [K in keyof ScannerEventMap as `scanner:${K & string}`]: ScannerEventMap[K];
+} & {
+  [K in keyof DownloaderEventMap as `downloader:${K & string}`]: DownloaderEventMap[K];
 } & {
   [key: `custom:${string}`]: Record<string, any>;
 };

@@ -1,9 +1,9 @@
 {
-  "name": "@moon/analyzer",
+  "name": "@moon/scanner",
   "version": "1.0.0",
-  "description": "Main analyzer for Moon HTPC",
+  "description": "Main scanner for Moon HTPC",
   "keywords": [
-    "analyzer"
+    "scanner"
   ],
   "author": {
     "name": "Mallory SCOTTON",
@@ -31,7 +31,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mallory-scotton/moon",
-    "directory": "packages/core/analyzer"
+    "directory": "packages/core/scanner"
   },
   "bugs": {
     "url": "https://github.com/mallory-scotton/moon/issues"

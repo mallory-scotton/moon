@@ -1,17 +1,17 @@
-# @moon/analyzer
+# @moon/scanner
 
-Main analyzer for Moon HTPC
+Main scanner for Moon HTPC
 
 Please refer to the [documentation](./docs) for more information.
 
 ## Installation
 
 ```sh
-yarn add @moon/analyzer
+yarn add @moon/scanner
 # or
-npm i @moon/analyzer
+npm i @moon/scanner
 # or
-pnpm i @moon/analyzer
+pnpm i @moon/scanner
 ```
 
 ## Contribution

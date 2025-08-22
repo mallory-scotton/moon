@@ -1,1 +1,1 @@
-# @moon/analyzer CHANGELOG
+# @moon/scanner CHANGELOG

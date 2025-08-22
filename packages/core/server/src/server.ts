@@ -293,6 +293,20 @@ export class Server extends TypedEventEmitter<ServerEvents> {
   }
 
   /**
+   * @brief Serve static files
+   * @description This function serves static files from a directory.
+   * @param path - The path to serve the static files.
+   * @param directory - The directory containing the static files.
+   * @returns The server instance.
+   * @example
+   * server.serveStatic('/static', 'public/static');
+   */
+  public serveStatic(path: string, directory: string): this {
+    this._app.use(path, express.static(directory));
+    return this;
+  }
+
+  /**
    * @brief Register a route
    * @description This function registers a route for the server.
    * @param path - The path of the route.

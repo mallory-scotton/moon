@@ -1,16 +1,16 @@
 /** Import theme */
-import { MoonTwPlugin } from '@moon/theme';
+import { MoonTWPlugin } from '@moon/theme';
 
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    './.storybook/welcome.mkdx',
+    './.storybook/welcome.mdx',
     '../components/*/src/**/*.{js,jsx,ts,tsx}',
     '../components/*/stories/**/*.{js,jsx,ts,tsx}',
     '../core/theme/src/components/**/*.{js,jsx,ts,tsx}',
-    '../core/theme/src/utilities/**/*.{js,jsx,ts,tsx}',
+    '../core/theme/src/utils/**/*.{js,jsx,ts,tsx}',
     '../core/theme/stories/**/*.{js,jsx,ts,tsx}'
   ],
   darkMode: 'class',
-  plugins: [MoonTwPlugin()]
+  plugins: [MoonTWPlugin()]
 };

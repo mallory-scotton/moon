@@ -1,5 +1,5 @@
 /** Dependencies */
-import { background, themes } from '@storybook/theming';
+import { themes } from '@storybook/theming';
 import type { Preview } from '@storybook/react';
 import './style.css';
 
@@ -22,17 +22,6 @@ const parameters: Preview['parameters'] = {
       date: /Date$/
     }
   },
-  background: {
-    app: '#161616',
-    bar: '#161616',
-    content: '#161616',
-    preview: '#161616',
-    hoverable: '#161616',
-    positive: '#161616',
-    negative: '#161616',
-    warning: '#161616',
-    critical: '#161616'
-  },
   darkMode: {
     current: 'dark',
     stylePreview: true,
@@ -42,14 +31,6 @@ const parameters: Preview['parameters'] = {
     dark: {
       ...themes.dark,
       ...commonTheme,
-      appBg: '#161616',
-      barBg: '#161616',
-      appContentBg: '#161616',
-      appPreviewBg: '#161616',
-      inputBg: '#161616',
-      buttonBg: '#161616',
-      booleanBg: '#161616',
-      booleanSelectedBg: '#161616',
       appBorderRadius: 14,
       brandImage: '/dark-logo.svg'
     },
@@ -59,13 +40,6 @@ const parameters: Preview['parameters'] = {
       appBorderRadius: 14,
       brandImage: '/light-logo.svg'
     }
-  },
-  backgrounds: {
-    values: [
-      { name: 'Dark', value: '#131314' },
-      { name: 'Light', value: '#FFFFFF' }
-    ],
-    default: 'Dark'
   }
 };
 

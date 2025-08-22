@@ -23,7 +23,7 @@
       "require": "./dist/index.js"
     }
   },
-  "sideEffects": false,
+  "sideEffects": true,
   "files": [
     "dist"
   ],
@@ -57,27 +57,22 @@
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^8.4.7",
-    "@storybook/addon-actions": "^8.4.7",
-    "@storybook/addon-docs": "^8.4.7",
-    "@storybook/addon-essentials": "^8.4.7",
-    "@storybook/addon-links": "^8.4.7",
-    "@storybook/builder-vite": "^8.4.7",
-    "@storybook/cli": "^8.4.7",
-    "@storybook/manager-api": "^8.4.7",
-    "@storybook/preview-api": "^8.4.7",
-    "@storybook/react": "^8.4.7",
-    "@storybook/react-vite": "^8.4.7",
-    "@storybook/theming": "^8.4.7",
-    "@tailwindcss/postcss": "^4.1.12",
-    "@types/react": "^19.0.2",
-    "@types/react-dom": "^19.0.2",
-    "@vitejs/plugin-react": "^4.3.4",
-    "autoprefixer": "^10.4.21",
-    "remark-gfm": "^4.0.1",
-    "storybook": "^8.4.7",
+    "@storybook/addon-a11y": "^8.5.0",
+    "@storybook/addon-docs": "^8.5.0",
+    "@storybook/addon-essentials": "^8.5.0",
+    "@storybook/addon-links": "^8.5.0",
+    "@storybook/cli": "^8.5.0",
+    "@storybook/manager-api": "^8.5.0",
+    "@storybook/preview-api": "^8.5.0",
+    "@storybook/react": "^8.5.0",
+    "@storybook/react-vite": "^8.5.0",
+    "@storybook/theming": "^8.5.0",
+    "@tailwindcss/vite": "4.1.11",
+    "@vitejs/plugin-react": "^4.3.3",
+    "remark-gfm": "^4.0.0",
+    "storybook": "^8.5.0",
     "storybook-dark-mode": "^4.0.2",
-    "tailwindcss": "4.1.11",
-    "vite": "^6.0.4"
+    "tailwindcss": "4.1.12",
+    "vite": "^5.4.11"
   }
 }

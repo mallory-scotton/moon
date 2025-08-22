@@ -25,8 +25,7 @@ const config: StorybookConfig = {
           }
         }
       }
-    },
-    './addons/react-strict-mode/register'
+    }
   ],
 
   framework: {

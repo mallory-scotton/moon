@@ -7,6 +7,7 @@ import path from 'path';
 import fs from 'fs';
 import * as Models from './models';
 import { MOON_DATABASE_PATH } from '@moon/config';
+import { context } from '@moon/context';
 
 /**
  * @brief Default options for the database connection.
@@ -63,12 +64,25 @@ export class Database {
     this.ensureDatabaseLocation();
 
     // Initialize Sequelize
-    this._sequelize = new Sequelize({
-      dialect: SqliteDialect,
-      storage: this._options.location,
-      logging: false,
-      models: [...Object.values(Models)]
-    });
+    try {
+      // Create Sequelize instance
+      this._sequelize = new Sequelize({
+        dialect: SqliteDialect,
+        storage: this._options.location,
+        logging: false,
+        models: [...Object.values(Models)]
+      });
+
+      // Emit database:connected event
+      context.emit('database:connected', { uri: this._options.location });
+    } catch (error: any) {
+      // Log the error
+      this._logger.error(`Error initializing Sequelize: ${error}`);
+      // Emit database:error event
+      context.emit('database:error', { error, context: 'init' });
+      // Handle errors
+      throw new DatabaseError(`Error initializing Sequelize: ${error}`);
+    }
   }
 
   /**
@@ -102,7 +116,13 @@ export class Database {
       // Synchronize the database
       await this._sequelize?.sync({ force });
       this._logger.info('Database synchronized successfully.');
-    } catch (error) {
+      // Emit database:synchronized event
+      context.emit('database:synchronized', { force });
+    } catch (error: any) {
+      // Log the error
+      this._logger.error(`Error syncing database: ${error}`);
+      // Emit database:error event
+      context.emit('database:error', { error, context: 'sync' });
       // Handle errors
       throw new DatabaseError(`Error syncing database: ${error}`);
     }
@@ -125,7 +145,13 @@ export class Database {
       // Close the database connection
       await this._sequelize?.close();
       this._logger.info('Database connection closed successfully.');
-    } catch (error) {
+      // Emit database:disconnected event
+      context.emit('database:disconnected', { reason: 'manual' });
+    } catch (error: any) {
+      // Log the error
+      this._logger.error(`Error closing database connection: ${error}`);
+      // Emit database:error event
+      context.emit('database:error', { error, context: 'close' });
       // Handle errors
       throw new DatabaseError(`Error closing database connection: ${error}`);
     }

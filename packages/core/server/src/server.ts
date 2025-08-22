@@ -7,6 +7,7 @@ import type { ServerOptions, MiddlewareConfig } from './types';
 import { TypedEventEmitter } from '@moon/types';
 import { Logger } from '@moon/logger';
 import { config } from '@moon/config';
+import { context } from '@moon/context';
 
 /**
  * @brief Default server options
@@ -226,6 +227,8 @@ export class Server extends TypedEventEmitter<ServerEvents> {
       this._server!.listen(this._options.port, this._options.host, () => {
         // Server started successfully
         this.emit('started', this._options);
+        // Emit server:started event
+        context.emit('server:started', { port: this._options.port, host: this._options.host });
         // Call onStart callback
         this._options.onStart?.();
         // Log server information
@@ -241,6 +244,8 @@ export class Server extends TypedEventEmitter<ServerEvents> {
       this._options.onError?.(error);
       // Emit error event
       this.emit('error', error);
+      // Emit server:error event
+      context.emit('server:error', { error, context: 'runtime' });
     });
   }
 
@@ -267,11 +272,15 @@ export class Server extends TypedEventEmitter<ServerEvents> {
           this._options.onError?.(error);
           // Emit error event
           this.emit('error', error);
+          // Emit server:error event
+          context.emit('server:error', { error, context: 'close' });
           // Handle error during server shutdown
           reject(error);
         } else {
           // Server stopped successfully
           this.emit('stopped');
+          // Emit server:stopped event
+          context.emit('server:stopped', { reason: 'manual' });
           // Log server information
           this._logger.info('Server stopped');
           // Clear server instance

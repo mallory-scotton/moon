@@ -61,6 +61,7 @@
     "@moon/config": "workspace:*",
     "@moon/logger": "workspace:*",
     "@moon/types": "workspace:*",
+    "@moon/context": "workspace:*",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
     "express": "^5.1.0",

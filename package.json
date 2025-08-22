@@ -20,7 +20,7 @@
     "create:cmp": "plop component",
     "test": "turbo test",
     "dev": "turbo dev",
-    "dev:story": "turbo dev --filter=@moon/storybook",
+    "dev:story": "pnpm -F @moon/storybook dev",
     "start:backend": "pnpm -F @moon/backend start",
     "start:backend:fast": "pnpm -F @moon/backend start:fast"
   },

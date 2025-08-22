@@ -15,7 +15,11 @@ export default {
 
 /** Define the default props */
 const defaultProps = {
-  ...poster.defaultVariants
+  ...poster.defaultVariants,
+  title: 'Movie Title',
+  subtitle: '2025',
+  src: 'https://www.themoviedb.org/t/p/w1280/7nXDwbbCiywZtnZ6MifWq309kO2.jpg',
+  progress: 56
 };
 
 /** Define the main template */

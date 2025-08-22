@@ -7,7 +7,11 @@ import { tv, VariantProps } from 'tailwind-variants';
  */
 export const poster = tv({
   slots: {
-    base: ''
+    base: '',
+    title: '',
+    subtitle: '',
+    image: '',
+    progress: ''
   },
   variants: {},
   defaultVariants: {},

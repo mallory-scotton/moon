@@ -67,6 +67,7 @@
     "@storybook/react": "^8.5.0",
     "@storybook/react-vite": "^8.5.0",
     "@storybook/theming": "^8.5.0",
+    "@tailwindcss/postcss": "^4.1.12",
     "@tailwindcss/vite": "4.1.11",
     "@vitejs/plugin-react": "^4.3.3",
     "remark-gfm": "^4.0.0",

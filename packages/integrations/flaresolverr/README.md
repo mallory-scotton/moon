@@ -1,4 +1,4 @@
-# @moon/bypasser
+# @moon/flaresolverr
 
 Bypass Cloudflare and anti DDos protection for automated scraping
 
@@ -7,11 +7,11 @@ Please refer to the [documentation](./docs) for more information.
 ## Installation
 
 ```sh
-yarn add @moon/bypasser
+yarn add @moon/flaresolverr
 # or
-npm i @moon/bypasser
+npm i @moon/flaresolverr
 # or
-pnpm i @moon/bypasser
+pnpm i @moon/flaresolverr
 ```
 
 ## Contribution

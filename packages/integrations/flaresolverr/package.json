@@ -1,9 +1,9 @@
 {
-  "name": "@moon/bypasser",
+  "name": "@moon/flaresolverr",
   "version": "1.0.0",
   "description": "Bypass Cloudflare and anti DDos protection for automated scraping",
   "keywords": [
-    "bypasser"
+    "flaresolverr"
   ],
   "author": {
     "name": "Mallory SCOTTON",
@@ -31,7 +31,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mallory-scotton/moon",
-    "directory": "packages/core/bypasser"
+    "directory": "packages/core/flaresolverr"
   },
   "bugs": {
     "url": "https://github.com/mallory-scotton/moon/issues"
@@ -56,6 +56,8 @@
     ]
   },
   "dependencies": {
-    "@moon/config": "workspace:*"
+    "@moon/config": "workspace:*",
+    "@moon/context": "workspace:*",
+    "@moon/utils": "workspace:*"
   }
 }

@@ -1,2 +1,2 @@
 /** Forward exports */
-export * from './binaries';
+export { getFlareSolverrBinaryPath } from './binaries';

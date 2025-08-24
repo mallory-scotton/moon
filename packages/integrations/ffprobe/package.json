@@ -58,6 +58,7 @@
   "dependencies": {
     "@moon/context": "workspace:*",
     "@moon/config": "workspace:*",
+    "@moon/utils": "workspace:*",
     "child_process": "^1.0.2"
   }
 }

@@ -3,18 +3,33 @@ import os from 'node:os';
 import { MOON_APPDATA } from '@moon/config';
 import { download, minutes } from '@moon/utils';
 import path from 'path';
+import fs from 'fs';
 
 /** Get the current running platform */
 const PLATFORM = os.platform();
 
 /**
- * @brief Downloads the specified version of FlareSolverr.
+ * @brief Get the specified version of FlareSolverr or download it.
  * @description This function downloads the FlareSolverr binary for the current platform.
  * @param version - The version of FlareSolverr to download.
  * @returns The path to the downloaded FlareSolverr binary.
  * @throws An error if the download fails.
  */
-export async function downloadFlareSolverr(version: string = 'v3.3.25') {
+export async function getFlareSolverrBinaryPath(version: string = 'v3.3.25') {
+  // Determine the final binary path
+  const finalBinary = path.join(
+    MOON_APPDATA,
+    'binaries',
+    'flaresolverr',
+    `flaresolverr${PLATFORM === 'win32' ? '.exe' : ''}`
+  );
+
+  // Check if the binary already exists
+  try {
+    fs.accessSync(finalBinary);
+    return finalBinary;
+  } catch {}
+
   // Determine the download URL based on the platform
   let URL = '';
   if (PLATFORM === 'win32') {
@@ -49,5 +64,6 @@ export async function downloadFlareSolverr(version: string = 'v3.3.25') {
     }
   );
 
-  return path.join(destination, 'flaresolverr');
+  // Return the path to the downloaded binary
+  return finalBinary;
 }

@@ -226,6 +226,9 @@ importers:
       '@moon/context':
         specifier: workspace:*
         version: link:../../core/context
+      '@moon/utils':
+        specifier: workspace:*
+        version: link:../../utils/utils
       child_process:
         specifier: ^1.0.2
         version: 1.0.2
@@ -238,6 +241,9 @@ importers:
       '@moon/context':
         specifier: workspace:*
         version: link:../../core/context
+      '@moon/utils':
+        specifier: workspace:*
+        version: link:../../utils/utils
       child_process:
         specifier: ^1.0.2
         version: 1.0.2

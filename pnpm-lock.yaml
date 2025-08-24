@@ -73,6 +73,36 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3
 
+  apps/tests:
+    dependencies:
+      '@moon/config':
+        specifier: workspace:*
+        version: link:../../packages/core/config
+      '@moon/context':
+        specifier: workspace:*
+        version: link:../../packages/core/context
+      '@moon/database':
+        specifier: workspace:*
+        version: link:../../packages/core/database
+      '@moon/ffmpeg':
+        specifier: workspace:*
+        version: link:../../packages/integrations/ffmpeg
+      '@moon/ffprobe':
+        specifier: workspace:*
+        version: link:../../packages/integrations/ffprobe
+      '@moon/flaresolverr':
+        specifier: workspace:*
+        version: link:../../packages/integrations/flaresolverr
+      '@moon/server':
+        specifier: workspace:*
+        version: link:../../packages/core/server
+      '@moon/tmdb':
+        specifier: workspace:*
+        version: link:../../packages/integrations/tmdb
+      '@moon/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+
   packages/components/poster:
     dependencies:
       '@moon/theme':
@@ -139,6 +169,9 @@ importers:
       '@moon/types':
         specifier: workspace:*
         version: link:../../types
+      '@moon/utils':
+        specifier: workspace:*
+        version: link:../../utils/utils
 
   packages/core/scheduler: {}
 

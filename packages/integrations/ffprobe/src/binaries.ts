@@ -40,7 +40,7 @@ export async function getFFprobeBinaryPath(): Promise<string> {
   } catch {}
 
   // Check if the binary is available for download
-  if (!AVAILABLE_BINARIES.includes(binaryName)) {
+  if (!AVAILABLE_BINARIES.includes(platformSpecificName)) {
     throw new Error(`FFprobe binary for ${PLATFORM}-${ARCH} is not available.`);
   }
 

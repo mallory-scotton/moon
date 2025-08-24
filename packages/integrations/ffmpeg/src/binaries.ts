@@ -40,8 +40,8 @@ export async function getFFmpegBinaryPath(): Promise<string> {
   } catch {}
 
   // Check if the binary is available for download
-  if (!AVAILABLE_BINARIES.includes(binaryName)) {
-    throw new Error(`FFprobe binary for ${PLATFORM}-${ARCH} is not available.`);
+  if (!AVAILABLE_BINARIES.includes(platformSpecificName)) {
+    throw new Error(`FFmpeg binary for ${PLATFORM}-${ARCH} is not available.`);
   }
 
   // Create download URL

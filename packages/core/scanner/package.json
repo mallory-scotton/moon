@@ -59,6 +59,7 @@
     "@moon/ffprobe": "workspace:*",
     "@moon/database": "workspace:*",
     "@moon/types": "workspace:*",
+    "@moon/utils": "workspace:*",
     "@moon/tmdb": "workspace:*"
   }
 }

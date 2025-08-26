@@ -163,6 +163,9 @@ importers:
       '@moon/ffprobe':
         specifier: workspace:*
         version: link:../../integrations/ffprobe
+      '@moon/filename-parser':
+        specifier: workspace:*
+        version: link:../../utils/filename-parser
       '@moon/tmdb':
         specifier: workspace:*
         version: link:../../integrations/tmdb
@@ -370,6 +373,8 @@ importers:
         version: 5.4.19(@types/node@24.2.1)(lightningcss@1.30.1)
 
   packages/types: {}
+
+  packages/utils/filename-parser: {}
 
   packages/utils/logger:
     dependencies:

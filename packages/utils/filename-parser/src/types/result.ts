@@ -1,7 +1,7 @@
 /** Dependencies */
 import {
   AUDIO_CHANNELS_EXPS,
-  AUDIO_CODECS_EXPS,
+  AUDIO_CODEC_EXPS,
   EDITION_EXPS,
   LANGUAGE_EXPS,
   VIDEO_CODEC_EXPS,
@@ -13,7 +13,7 @@ import {
  * @brief Audio codec used in the media file
  * @description The audio codec used in the media file
  */
-export type AudioCodec = keyof typeof AUDIO_CODECS_EXPS;
+export type AudioCodec = keyof typeof AUDIO_CODEC_EXPS;
 
 /**
  * @brief Audio channels used in the media file

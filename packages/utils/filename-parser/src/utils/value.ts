@@ -5,12 +5,12 @@
  * @param regexes A record of named regular expressions to match against the text.
  * @returns The first captured group from the matching regex, or null if no match is found.
  */
-export function getValue(text: string, regexes: Record<string, RegExp>): string | null {
+export function getValue<T extends string>(text: string, regexes: Record<T, RegExp>): T | null {
   // Iterate over each regex in the record
-  for (const [value, regex] of Object.entries(regexes)) {
+  for (const [value, regex] of Object.entries<RegExp>(regexes)) {
     // Test the regex against the text
     if (regex.test(text)) {
-      return value;
+      return value as T;
     }
   }
   // If no match is found, return null

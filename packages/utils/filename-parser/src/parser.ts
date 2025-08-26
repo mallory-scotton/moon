@@ -14,7 +14,11 @@ import * as rules from './rules';
 export function parseFilename(filename: string, isTv: true): TvFilenameParseResult;
 export function parseFilename(filename: string, isTv: false): BaseFilenameParseResult;
 export function parseFilename(filename: string, isTv: boolean): FilenameParseResult {
-  return {};
+  return utils.filterEmpty({
+    audioChannels: utils.getValue(filename, rules.AUDIO_CHANNELS_EXPS) ?? undefined,
+    audioCodec: utils.getValue(filename, rules.AUDIO_CODEC_EXPS) ?? undefined,
+    videoCodec: utils.getValue(filename, rules.VIDEO_CODEC_EXPS) ?? undefined
+  });
 }
 
 /**

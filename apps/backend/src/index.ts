@@ -21,4 +21,6 @@ async function main() {
 }
 
 /** Start the application */
-main();
+if (require.main === module) {
+  main();
+}

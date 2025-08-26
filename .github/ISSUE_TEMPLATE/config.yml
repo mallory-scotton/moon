@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💡 Feature Request
+    url: https://github.com/mallory-scotton/moon/discussions/categories/feature-requests
+    about: 💡 Suggest a new feature, improve an existing feature and etc
+  - name: 🤔 Long question or ideas?
+    url: https://github.com/mallory-scotton/moon/discussions
+    about: Ask long-form questions and discuss ideas.

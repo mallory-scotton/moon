@@ -1,6 +1,8 @@
 /** Dependencies */
 import { ApiWrapper } from '@moon/types';
 import * as Types from './types';
+import fs from 'fs';
+import path from 'path';
 
 /**
  * @brief TMDB API Wrapper
@@ -10,6 +12,10 @@ import * as Types from './types';
  * const popularMovies = await tmdb.getPopularMovies();
  */
 export class TMDB extends ApiWrapper {
+  /** Class members */
+  private _configuration: Types.TMDBConfiguration | null = null;
+  private _configurationPromise: Promise<Types.TMDBConfiguration> | null = null;
+
   /**
    * @brief TMDB API constructor
    * @description Initializes the TMDB API wrapper with the provided API key.
@@ -20,12 +26,135 @@ export class TMDB extends ApiWrapper {
   constructor(apiKey: string) {
     // Call the parent class constructor with the TMDB API configuration
     super({
-      baseUrl: 'https://api.themoviedb.org/3',
+      baseUrl: 'https://api.themoviedb.org/3/',
       defaultHeaders: {
         'Content-Type': 'application/json;charset=utf-8',
         'Authorization': `Bearer ${apiKey}`
       }
     });
+
+    // Get the API Configuration
+    this._configurationPromise = this.getApiConfiguration();
+    this._configurationPromise
+      .then((config) => {
+        this._configuration = config;
+        this._configurationPromise = null;
+      })
+      .catch((error) => {
+        this._configurationPromise = null;
+        throw new Error('Failed to load TMDB API Configuration');
+      });
+  }
+
+  /**
+   * @brief Get the TMDB API configuration
+   * @description This method returns the TMDB API configuration.
+   * @returns The TMDB API configuration.
+   */
+  public get configuration(): Types.TMDBConfiguration {
+    if (!this._configuration) {
+      throw new Error('TMDB API Configuration not loaded');
+    }
+    return this._configuration;
+  }
+
+  /**
+   * @brief Downloads an image from TMDB.
+   * @description This method downloads an image from TMDB and saves it to the specified path.
+   * @param imagePath - The path to the image on TMDB.
+   * @param size - The size of the image to download.
+   * @param savePath - The local path to save the downloaded image.
+   * @returns The local path to the downloaded image.
+   */
+  private async _downloadImage<T extends string>(imagePath: string, size: T, savePath: string): Promise<string> {
+    // Wait for the TMDB API Configuration to be loaded
+    if (!this.configuration) {
+      if (!this._configurationPromise) {
+        throw new Error('TMDB API Configuration not loaded');
+      }
+      await this._configurationPromise;
+    }
+
+    // Download the poster image from TMDB
+    const baseURL = this.configuration.images.secure_base_url;
+    const fullPath = `${baseURL}${size}${imagePath}`;
+
+    // Download the poster image from TMDB
+    const buffer = await this.downloadFromURL(fullPath);
+
+    // Resolve the file path
+    const filePath = path.resolve(savePath);
+
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync(path.dirname(filePath))) {
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    }
+
+    // Write the downloaded buffer to the file
+    fs.writeFileSync(filePath, buffer as Buffer);
+
+    // Return the file path
+    return filePath;
+  }
+
+  /**
+   * @brief Downloads a poster image from TMDB.
+   * @description This method downloads a poster image from TMDB and saves it to the specified path.
+   * @param imagePath - The path to the image on TMDB.
+   * @param size - The size of the image to download.
+   * @param savePath - The local path to save the downloaded image.
+   * @returns The local path to the downloaded image.
+   */
+  public async downloadPoster(imagePath: string, size: Types.TMDBPosterSizes, savePath: string): Promise<string> {
+    return this._downloadImage(imagePath, size, savePath);
+  }
+
+  /**
+   * @brief Downloads a backdrop image from TMDB.
+   * @description This method downloads a backdrop image from TMDB and saves it to the specified path.
+   * @param imagePath - The path to the image on TMDB.
+   * @param size - The size of the image to download.
+   * @param savePath - The local path to save the downloaded image.
+   * @returns The local path to the downloaded image.
+   */
+  public async downloadBackdrop(imagePath: string, size: Types.TMDBBackdropSizes, savePath: string): Promise<string> {
+    return this._downloadImage(imagePath, size, savePath);
+  }
+
+  /**
+   * @brief Downloads a logo image from TMDB.
+   * @description This method downloads a logo image from TMDB and saves it to the specified path.
+   * @param imagePath - The path to the image on TMDB.
+   * @param size - The size of the image to download.
+   * @param savePath - The local path to save the downloaded image.
+   * @returns The local path to the downloaded image.
+   */
+  public async downloadLogo(imagePath: string, size: Types.TMDBLogoSizes, savePath: string): Promise<string> {
+    return this._downloadImage(imagePath, size, savePath);
+  }
+
+  /**
+   * @brief Downloads a profile image from TMDB.
+   * @description This method downloads a profile image from TMDB and saves it to the specified path.
+   * @param imagePath - The path to the image on TMDB.
+   * @param size - The size of the image to download.
+   * @param savePath - The local path to save the downloaded image.
+   * @returns The local path to the downloaded image.
+   */
+  public async downloadProfile(imagePath: string, size: Types.TMDBProfileSizes, savePath: string): Promise<string> {
+    return this._downloadImage(imagePath, size, savePath);
+  }
+
+  /**
+   * @brief Downloads a still image from TMDB.
+   * @description This method downloads a still image from TMDB and saves it to the specified path.
+   * @param imagePath - The path to the image on TMDB.
+   * @param size - The size of the image to download.
+   * @param savePath - The local path to save the downloaded image.
+   * @returns The local path to the downloaded image.
+   */
+  public async downloadStill(imagePath: string, size: Types.TMDBStillSizes, savePath: string): Promise<string> {
+    return this._downloadImage(imagePath, size, savePath);
   }
 
   /**
@@ -37,7 +166,7 @@ export class TMDB extends ApiWrapper {
    * const movies = await tmdb.searchMovie({ query: 'Inception', year: 2010 });
    */
   public async searchMovie(options: Types.TMDBMovieSearchOptions): Promise<Types.TMDBSearch<Types.TMDBMovie>> {
-    return this.get<Types.TMDBSearch<Types.TMDBMovie>>('/search/movie', { params: options });
+    return this.get<Types.TMDBSearch<Types.TMDBMovie>>('search/movie', { params: options });
   }
 
   /**
@@ -49,7 +178,7 @@ export class TMDB extends ApiWrapper {
    * const companies = await tmdb.searchCompany({ query: 'Warner Bros' });
    */
   async searchCompany(options: Types.TMDBSearchOptions): Promise<Types.TMDBSearch<Types.TMDBCompany>> {
-    return await this.get<Types.TMDBSearch<Types.TMDBCompany>>('/search/company', { params: options });
+    return await this.get<Types.TMDBSearch<Types.TMDBCompany>>('search/company', { params: options });
   }
 
   /**
@@ -61,7 +190,7 @@ export class TMDB extends ApiWrapper {
    * const collections = await tmdb.searchCollection({ query: 'The Lord of the Rings' });
    */
   async searchCollection(options: Types.TMDBSearchOptions): Promise<Types.TMDBSearch<Types.TMDBCollection>> {
-    return await this.get<Types.TMDBSearch<Types.TMDBCollection>>('/search/collection', { params: options });
+    return await this.get<Types.TMDBSearch<Types.TMDBCollection>>('search/collection', { params: options });
   }
 
   /**
@@ -73,7 +202,7 @@ export class TMDB extends ApiWrapper {
    * const keywords = await tmdb.searchKeyword({ query: 'Inception' });
    */
   async searchKeyword(options: Types.TMDBSearchOptions): Promise<Types.TMDBSearch<{ id: string; name: string }>> {
-    return await this.get<Types.TMDBSearch<{ id: string; name: string }>>('/search/keyword', { params: options });
+    return await this.get<Types.TMDBSearch<{ id: string; name: string }>>('search/keyword', { params: options });
   }
 
   /**
@@ -85,7 +214,7 @@ export class TMDB extends ApiWrapper {
    * const people = await tmdb.searchPerson({ query: 'Leonardo DiCaprio' });
    */
   async searchPerson(options: Types.TMDBPeopleSearchOptions): Promise<Types.TMDBSearch<Types.TMDBPerson>> {
-    return await this.get<Types.TMDBSearch<Types.TMDBPerson>>('/search/person', { params: options });
+    return await this.get<Types.TMDBSearch<Types.TMDBPerson>>('search/person', { params: options });
   }
 
   /**
@@ -97,7 +226,7 @@ export class TMDB extends ApiWrapper {
    * const tvShows = await tmdb.searchTvShow({ query: 'Breaking Bad' });
    */
   async searchTvShow(options: Types.TMDBTvSearchOptions): Promise<Types.TMDBSearch<Types.TMDBTV>> {
-    return await this.get<Types.TMDBSearch<Types.TMDBTV>>('/search/tv', { params: options });
+    return await this.get<Types.TMDBSearch<Types.TMDBTV>>('search/tv', { params: options });
   }
 
   /**
@@ -109,7 +238,7 @@ export class TMDB extends ApiWrapper {
    * const results = await tmdb.searchMulti({ query: 'Inception' });
    */
   async searchMulti(options: Types.TMDBMultiSearchOptions): Promise<Types.TMDBSearch<Types.TMDBMultiSearchResult>> {
-    return await this.get<Types.TMDBSearch<Types.TMDBMultiSearchResult>>('/search/multi', { params: options });
+    return await this.get<Types.TMDBSearch<Types.TMDBMultiSearchResult>>('search/multi', { params: options });
   }
 
   /**
@@ -120,7 +249,7 @@ export class TMDB extends ApiWrapper {
    * const accountDetails = await tmdb.getAccountDetails();
    */
   async getAccountDetails(): Promise<Types.TMDBAccountDetails> {
-    return await this.get<Types.TMDBAccountDetails>('/account');
+    return await this.get<Types.TMDBAccountDetails>('account');
   }
 
   /**
@@ -131,7 +260,7 @@ export class TMDB extends ApiWrapper {
    * const movieCertifications = await tmdb.getMovieCertifications();
    */
   async getMovieCertifications(): Promise<Types.TMDBCertifications> {
-    return await this.get<Types.TMDBCertifications>('/certification/movie/list');
+    return await this.get<Types.TMDBCertifications>('certification/movie/list');
   }
 
   /**
@@ -142,7 +271,7 @@ export class TMDB extends ApiWrapper {
    * const tvShowCertifications = await tmdb.getTvShowCertifications();
    */
   async getTvShowCertifications(): Promise<Types.TMDBCertifications> {
-    return await this.get<Types.TMDBCertifications>('/certification/tv/list');
+    return await this.get<Types.TMDBCertifications>('certification/tv/list');
   }
 
   /**
@@ -154,7 +283,7 @@ export class TMDB extends ApiWrapper {
    * const movieChanges = await tmdb.getMoviesChanges();
    */
   async getMoviesChanges(options?: Types.TMDBChangeOption): Promise<Types.TMDBMediaChanges> {
-    return await this.get<Types.TMDBMediaChanges>('/movie/changes', { params: options });
+    return await this.get<Types.TMDBMediaChanges>('movie/changes', { params: options });
   }
 
   /**
@@ -166,7 +295,7 @@ export class TMDB extends ApiWrapper {
    * const tvShowChanges = await tmdb.getTvShowsChanges();
    */
   async getTvShowsChanges(options?: Types.TMDBChangeOption): Promise<Types.TMDBMediaChanges> {
-    return await this.get<Types.TMDBMediaChanges>('/tv/changes', { params: options });
+    return await this.get<Types.TMDBMediaChanges>('tv/changes', { params: options });
   }
 
   /**
@@ -178,7 +307,7 @@ export class TMDB extends ApiWrapper {
    * const personChanges = await tmdb.getPeopleChanges();
    */
   async getPeopleChanges(options?: Types.TMDBChangeOption): Promise<Types.TMDBMediaChanges> {
-    return await this.get<Types.TMDBMediaChanges>('/person/changes', { params: options });
+    return await this.get<Types.TMDBMediaChanges>('person/changes', { params: options });
   }
 
   /**
@@ -196,7 +325,7 @@ export class TMDB extends ApiWrapper {
     timeWindow: Types.TMDBTimeWindow,
     options?: Types.TMDBLanguageOption & Types.TMDBPageOption
   ): Promise<Types.TMDBTrendingResults<T>> {
-    return await this.get<Types.TMDBTrendingResults<T>>(`/trending/${mediaType}/${timeWindow}`, { params: options });
+    return await this.get<Types.TMDBTrendingResults<T>>(`trending/${mediaType}/${timeWindow}`, { params: options });
   }
 
   /**
@@ -208,7 +337,7 @@ export class TMDB extends ApiWrapper {
    * const reviewDetails = await tmdb.getReviewDetails('review_id');
    */
   async getReviewDetails(id: string): Promise<Types.TMDBReviewDetails> {
-    return await this.get<Types.TMDBReviewDetails>(`/review/${id}`);
+    return await this.get<Types.TMDBReviewDetails>(`review/${id}`);
   }
 
   /**
@@ -220,7 +349,7 @@ export class TMDB extends ApiWrapper {
    * const networkDetails = await tmdb.getNetworkDetails(1);
    */
   async getNetworkDetails(id: number): Promise<Types.TMDBNetworkDetails> {
-    return await this.get<Types.TMDBNetworkDetails>(`/network/${id}`);
+    return await this.get<Types.TMDBNetworkDetails>(`network/${id}`);
   }
 
   /**
@@ -232,7 +361,7 @@ export class TMDB extends ApiWrapper {
    * const networkAlternativeNames = await tmdb.getNetworkAlternativeNames(1);
    */
   async getNetworkAlternativeNames(id: number): Promise<Types.TMDBAlternativeNames> {
-    return await this.get<Types.TMDBAlternativeNames>(`/network/${id}/alternative_names`);
+    return await this.get<Types.TMDBAlternativeNames>(`network/${id}/alternative_names`);
   }
 
   /**
@@ -244,7 +373,7 @@ export class TMDB extends ApiWrapper {
    * const networkImages = await tmdb.getNetworkImages(1);
    */
   async getNetworkImages(id: number): Promise<Types.TMDBNetworkImages> {
-    return await this.get<Types.TMDBNetworkImages>(`/network/${id}/images`);
+    return await this.get<Types.TMDBNetworkImages>(`network/${id}/images`);
   }
 
   /**
@@ -256,7 +385,7 @@ export class TMDB extends ApiWrapper {
    * const watchProviderRegions = await tmdb.getWatchProviderRegions();
    */
   async getWatchProviderRegions(options?: Types.TMDBLanguageOption): Promise<Types.TMDBRegionResult> {
-    return await this.get<Types.TMDBRegionResult>('/watch/providers/regions', { params: options });
+    return await this.get<Types.TMDBRegionResult>('watch/providers/regions', { params: options });
   }
 
   /**
@@ -268,7 +397,7 @@ export class TMDB extends ApiWrapper {
    * const movieProviders = await tmdb.getMovieProviders();
    */
   async getMovieProviders(options?: Types.TMDBProviderOptions): Promise<Types.TMDBWatchProviderResult> {
-    return await this.get<Types.TMDBWatchProviderResult>('/watch/providers/movie', { params: options });
+    return await this.get<Types.TMDBWatchProviderResult>('watch/providers/movie', { params: options });
   }
 
   /**
@@ -280,7 +409,7 @@ export class TMDB extends ApiWrapper {
    * const tvShowProviders = await tmdb.getTvShowProviders();
    */
   async getTvShowProviders(options?: Types.TMDBProviderOptions): Promise<Types.TMDBWatchProviderResult> {
-    return await this.get<Types.TMDBWatchProviderResult>('/watch/providers/tv', { params: options });
+    return await this.get<Types.TMDBWatchProviderResult>('watch/providers/tv', { params: options });
   }
 
   /**
@@ -293,7 +422,7 @@ export class TMDB extends ApiWrapper {
    * const collectionDetails = await tmdb.getCollectionDetails(1);
    */
   async getCollectionDetails(id: number, options?: Types.TMDBLanguageOption): Promise<Types.TMDBCollectionDetails> {
-    return await this.get<Types.TMDBCollectionDetails>(`/collection/${id}`, { params: options });
+    return await this.get<Types.TMDBCollectionDetails>(`collection/${id}`, { params: options });
   }
 
   /**
@@ -313,7 +442,7 @@ export class TMDB extends ApiWrapper {
       include_image_language: options?.include_image_language?.join(','),
       language: options?.language
     };
-    return await this.get<Types.TMDBImageCollection>(`/collection/${id}/images`, { params: computedOptions });
+    return await this.get<Types.TMDBImageCollection>(`collection/${id}/images`, { params: computedOptions });
   }
 
   /**
@@ -326,7 +455,7 @@ export class TMDB extends ApiWrapper {
    * const collectionTranslations = await tmdb.getCollectionTranslations(1);
    */
   async getCollectionTranslations(id: number, options?: Types.TMDBLanguageOption): Promise<Types.TMDBTranslation> {
-    return await this.get<Types.TMDBTranslation>(`/collection/${id}/translations`, { params: options });
+    return await this.get<Types.TMDBTranslation>(`collection/${id}/translations`, { params: options });
   }
 
   /**
@@ -338,7 +467,7 @@ export class TMDB extends ApiWrapper {
    * const companyDetails = await tmdb.getCompanyDetails(1);
    */
   async getCompanyDetails(id: number): Promise<Types.TMDBCompanyDetails> {
-    return await this.get<Types.TMDBCompanyDetails>(`/company/${id}`);
+    return await this.get<Types.TMDBCompanyDetails>(`company/${id}`);
   }
 
   /**
@@ -350,7 +479,7 @@ export class TMDB extends ApiWrapper {
    * const companyAlternativeNames = await tmdb.getCompanyAlternativeNames(1);
    */
   async getCompanyAlternativeNames(id: number): Promise<Types.TMDBAlternativeNames> {
-    return await this.get<Types.TMDBAlternativeNames>(`/company/${id}/alternative_names`);
+    return await this.get<Types.TMDBAlternativeNames>(`company/${id}/alternative_names`);
   }
 
   /**
@@ -362,7 +491,7 @@ export class TMDB extends ApiWrapper {
    * const companyImages = await tmdb.getCompanyImages(1);
    */
   async getCompanyImages(id: number): Promise<Types.TMDBCompanyImages> {
-    return await this.get<Types.TMDBCompanyImages>(`/company/${id}/images`);
+    return await this.get<Types.TMDBCompanyImages>(`company/${id}/images`);
   }
 
   /**
@@ -373,7 +502,7 @@ export class TMDB extends ApiWrapper {
    * const apiConfiguration = await tmdb.getApiConfiguration();
    */
   async getApiConfiguration(): Promise<Types.TMDBConfiguration> {
-    return await this.get<Types.TMDBConfiguration>('/configuration');
+    return await this.get<Types.TMDBConfiguration>('configuration');
   }
 
   /**
@@ -384,7 +513,7 @@ export class TMDB extends ApiWrapper {
    * const countries = await tmdb.getCountries();
    */
   async getCountries(): Promise<Types.TMDBCountryConfiguration[]> {
-    return await this.get<Types.TMDBCountryConfiguration[]>('/configuration/countries');
+    return await this.get<Types.TMDBCountryConfiguration[]>('configuration/countries');
   }
 
   /**
@@ -395,7 +524,7 @@ export class TMDB extends ApiWrapper {
    * const languages = await tmdb.getLanguages();
    */
   async getLanguages(): Promise<Types.TMDBLanguageConfiguration[]> {
-    return await this.get<Types.TMDBLanguageConfiguration[]>('/configuration/languages');
+    return await this.get<Types.TMDBLanguageConfiguration[]>('configuration/languages');
   }
 
   /**
@@ -406,7 +535,7 @@ export class TMDB extends ApiWrapper {
    * const jobs = await tmdb.getJobs();
    */
   async getJobs(): Promise<Types.TMDBJobConfiguration[]> {
-    return await this.get<Types.TMDBJobConfiguration[]>('/configuration/jobs');
+    return await this.get<Types.TMDBJobConfiguration[]>('configuration/jobs');
   }
 
   /**
@@ -417,7 +546,7 @@ export class TMDB extends ApiWrapper {
    * const primaryTranslations = await tmdb.getPrimaryTranslations();
    */
   async getPrimaryTranslations(): Promise<string[]> {
-    return await this.get<string[]>('/configuration/primary_translations');
+    return await this.get<string[]>('configuration/primary_translations');
   }
 
   /**
@@ -428,7 +557,7 @@ export class TMDB extends ApiWrapper {
    * const timezones = await tmdb.getTimezones();
    */
   async getTimezones(): Promise<Types.TMDBTimezoneConfiguration[]> {
-    return await this.get<Types.TMDBTimezoneConfiguration[]>('/configuration/timezones');
+    return await this.get<Types.TMDBTimezoneConfiguration[]>('configuration/timezones');
   }
 
   /**
@@ -440,7 +569,7 @@ export class TMDB extends ApiWrapper {
    * const credits = await tmdb.getCredits(1);
    */
   async getCredits(id: number): Promise<Types.TMDBCreditResponse> {
-    return await this.get<Types.TMDBCreditResponse>(`/credit/${id}`);
+    return await this.get<Types.TMDBCreditResponse>(`credit/${id}`);
   }
 
   /**
@@ -452,7 +581,7 @@ export class TMDB extends ApiWrapper {
    * const discoveredMovies = await tmdb.discoverMovies({ year: 2023, with_genres: '28' });
    */
   async discoverMovies(options?: Types.TMDBMovieQueryOptions): Promise<Types.TMDBMovieDiscoverResult> {
-    return await this.get<Types.TMDBMovieDiscoverResult>('/discover/movie', { params: options });
+    return await this.get<Types.TMDBMovieDiscoverResult>('discover/movie', { params: options });
   }
 
   /**
@@ -464,7 +593,7 @@ export class TMDB extends ApiWrapper {
    * const discoveredTvShows = await tmdb.discoverTvShows({ first_air_date_year: 2023 });
    */
   async discoverTvShows(options?: Types.TMDBTvShowQueryOptions): Promise<Types.TMDBTvShowDiscoverResult> {
-    return await this.get<Types.TMDBTvShowDiscoverResult>('/discover/tv', { params: options });
+    return await this.get<Types.TMDBTvShowDiscoverResult>('discover/tv', { params: options });
   }
 
   /**
@@ -477,7 +606,7 @@ export class TMDB extends ApiWrapper {
    * const findResults = await tmdb.findByExternalId('tt1375666', { external_source: 'imdb_id' });
    */
   async findByExternalId(id: string, options: Types.TMDBExternalIdOptions): Promise<Types.TMDBFindResult> {
-    return await this.get<Types.TMDBFindResult>(`/find/${id}`, { params: options });
+    return await this.get<Types.TMDBFindResult>(`find/${id}`, { params: options });
   }
 
   /**
@@ -489,7 +618,7 @@ export class TMDB extends ApiWrapper {
    * const movieGenres = await tmdb.getMovieGenres();
    */
   async getMovieGenres(options?: Types.TMDBLanguageOption): Promise<Types.TMDBGenres> {
-    return await this.get<Types.TMDBGenres>('/genre/movie/list', { params: options });
+    return await this.get<Types.TMDBGenres>('genre/movie/list', { params: options });
   }
 
   /**
@@ -501,7 +630,7 @@ export class TMDB extends ApiWrapper {
    * const tvShowGenres = await tmdb.getTvShowGenres();
    */
   async getTvShowGenres(options?: Types.TMDBLanguageOption): Promise<Types.TMDBGenres> {
-    return await this.get<Types.TMDBGenres>('/genre/tv/list', { params: options });
+    return await this.get<Types.TMDBGenres>('genre/tv/list', { params: options });
   }
 
   /**
@@ -513,7 +642,7 @@ export class TMDB extends ApiWrapper {
    * const keywordDetails = await tmdb.getKeywordDetails(123);
    */
   async getKeywordDetails(id: number): Promise<Types.TMDBKeyword> {
-    return await this.get<Types.TMDBKeyword>(`/keyword/${id}`);
+    return await this.get<Types.TMDBKeyword>(`keyword/${id}`);
   }
 
   /**
@@ -535,7 +664,7 @@ export class TMDB extends ApiWrapper {
       append_to_response: appendToResponse ? appendToResponse.join(',') : undefined,
       language: language
     };
-    return await this.get<Types.TMDBAppendToResponse<Types.TMDBPersonDetails, T, 'person'>>(`/person/${id}`, {
+    return await this.get<Types.TMDBAppendToResponse<Types.TMDBPersonDetails, T, 'person'>>(`person/${id}`, {
       params: options
     });
   }
@@ -553,7 +682,7 @@ export class TMDB extends ApiWrapper {
     id: number,
     options?: Types.TMDBChangeOption
   ): Promise<Types.TMDBChanges<Types.TMDBPersonChangeValue>> {
-    return await this.get<Types.TMDBChanges<Types.TMDBPersonChangeValue>>(`/person/${id}/changes`, { params: options });
+    return await this.get<Types.TMDBChanges<Types.TMDBPersonChangeValue>>(`person/${id}/changes`, { params: options });
   }
 
   /**
@@ -566,7 +695,7 @@ export class TMDB extends ApiWrapper {
    * const movieCredits = await tmdb.getPersonMovieCredits(287);
    */
   async getPersonMovieCredits(id: number, options?: Types.TMDBLanguageOption): Promise<Types.TMDBPersonMovieCredit> {
-    return await this.get<Types.TMDBPersonMovieCredit>(`/person/${id}/movie_credits`, { params: options });
+    return await this.get<Types.TMDBPersonMovieCredit>(`person/${id}/movie_credits`, { params: options });
   }
 
   /**
@@ -579,7 +708,7 @@ export class TMDB extends ApiWrapper {
    * const tvCredits = await tmdb.getPersonTvShowCredits(287);
    */
   async getPersonTvShowCredits(id: number, options?: Types.TMDBLanguageOption): Promise<Types.TMDBPersonTvShowCredit> {
-    return await this.get<Types.TMDBPersonTvShowCredit>(`/person/${id}/tv_credits`, { params: options });
+    return await this.get<Types.TMDBPersonTvShowCredit>(`person/${id}/tv_credits`, { params: options });
   }
 
   /**
@@ -595,7 +724,7 @@ export class TMDB extends ApiWrapper {
     id: number,
     options?: Types.TMDBLanguageOption
   ): Promise<Types.TMDBPersonCombinedCredits> {
-    return await this.get<Types.TMDBPersonCombinedCredits>(`/person/${id}/combined_credits`, { params: options });
+    return await this.get<Types.TMDBPersonCombinedCredits>(`person/${id}/combined_credits`, { params: options });
   }
 
   /**
@@ -607,7 +736,7 @@ export class TMDB extends ApiWrapper {
    * const externalIds = await tmdb.getPersonExternalId(287);
    */
   async getPersonExternalId(id: number): Promise<Types.TMDBExternalIds> {
-    return await this.get<Types.TMDBExternalIds>(`/person/${id}/external_ids`);
+    return await this.get<Types.TMDBExternalIds>(`person/${id}/external_ids`);
   }
 
   /**
@@ -619,7 +748,7 @@ export class TMDB extends ApiWrapper {
    * const personImages = await tmdb.getPersonImages(287);
    */
   async getPersonImages(id: number): Promise<Types.TMDBPeopleImages> {
-    return await this.get<Types.TMDBPeopleImages>(`/person/${id}/images`);
+    return await this.get<Types.TMDBPeopleImages>(`person/${id}/images`);
   }
 
   /**
@@ -631,7 +760,7 @@ export class TMDB extends ApiWrapper {
    * const personTranslations = await tmdb.getPersonTranslations(287);
    */
   async getPersonTranslations(id: number): Promise<Types.TMDBPersonTranslations> {
-    return await this.get<Types.TMDBPersonTranslations>(`/person/${id}/translations`);
+    return await this.get<Types.TMDBPersonTranslations>(`person/${id}/translations`);
   }
 
   /**
@@ -642,7 +771,7 @@ export class TMDB extends ApiWrapper {
    * const latestPerson = await tmdb.getPersonLatest();
    */
   async getPersonLatest(): Promise<Types.TMDBPersonDetails> {
-    return await this.get<Types.TMDBPersonDetails>('/person/latest');
+    return await this.get<Types.TMDBPersonDetails>('person/latest');
   }
 
   /**
@@ -654,7 +783,7 @@ export class TMDB extends ApiWrapper {
    * const popularPeople = await tmdb.getPersonPopular({ page: 1 });
    */
   async getPersonPopular(options?: Types.TMDBLanguageOption & Types.TMDBPageOption): Promise<Types.TMDBPopularPeople> {
-    return await this.get<Types.TMDBPopularPeople>('/person/popular', { params: options });
+    return await this.get<Types.TMDBPopularPeople>('person/popular', { params: options });
   }
 
   /**
@@ -677,7 +806,7 @@ export class TMDB extends ApiWrapper {
       language: language
     };
 
-    return await this.get<Types.TMDBAppendToResponse<Types.TMDBMovieDetails, T, 'movie'>>(`/movie/${id}`, {
+    return await this.get<Types.TMDBAppendToResponse<Types.TMDBMovieDetails, T, 'movie'>>(`movie/${id}`, {
       params: options
     });
   }
@@ -691,7 +820,7 @@ export class TMDB extends ApiWrapper {
    * const alternativeTitles = await tmdb.getMovieAlternativeTitles(550);
    */
   async getMovieAlternativeTitles(id: number): Promise<Types.TMDBAlternativeTitles> {
-    return await this.get<Types.TMDBAlternativeTitles>(`/movie/${id}/alternative_titles`);
+    return await this.get<Types.TMDBAlternativeTitles>(`movie/${id}/alternative_titles`);
   }
 
   /**
@@ -707,7 +836,7 @@ export class TMDB extends ApiWrapper {
     id: number,
     options?: Types.TMDBChangeOption
   ): Promise<Types.TMDBChanges<Types.TMDBMovieChangeValue>> {
-    return await this.get<Types.TMDBChanges<Types.TMDBMovieChangeValue>>(`/movie/${id}/changes`, { params: options });
+    return await this.get<Types.TMDBChanges<Types.TMDBMovieChangeValue>>(`movie/${id}/changes`, { params: options });
   }
 
   /**
@@ -720,7 +849,7 @@ export class TMDB extends ApiWrapper {
    * const movieCredits = await tmdb.getMovieCredits(550);
    */
   async getMovieCredits(id: number, options?: Types.TMDBLanguageOption): Promise<Types.TMDBCredits> {
-    return await this.get<Types.TMDBCredits>(`/movie/${id}/credits`, { params: options });
+    return await this.get<Types.TMDBCredits>(`movie/${id}/credits`, { params: options });
   }
 
   /**
@@ -732,7 +861,7 @@ export class TMDB extends ApiWrapper {
    * const externalIds = await tmdb.getMovieExternalIds(550);
    */
   async getMovieExternalIds(id: number): Promise<Types.TMDBExternalIds> {
-    return await this.get<Types.TMDBExternalIds>(`/movie/${id}/external_ids`);
+    return await this.get<Types.TMDBExternalIds>(`movie/${id}/external_ids`);
   }
 
   /**
@@ -749,7 +878,7 @@ export class TMDB extends ApiWrapper {
       include_image_language: options?.include_image_language?.join(','),
       language: options?.language
     };
-    return await this.get<Types.TMDBImages>(`/movie/${id}/images`, { params: computedOptions });
+    return await this.get<Types.TMDBImages>(`movie/${id}/images`, { params: computedOptions });
   }
 
   /**
@@ -761,7 +890,7 @@ export class TMDB extends ApiWrapper {
    * const movieKeywords = await tmdb.getMovieKeywords(550);
    */
   async getMovieKeywords(id: number): Promise<Types.TMDBKeywords> {
-    return await this.get<Types.TMDBKeywords>(`/movie/${id}/keywords`);
+    return await this.get<Types.TMDBKeywords>(`movie/${id}/keywords`);
   }
 
   /**
@@ -777,7 +906,7 @@ export class TMDB extends ApiWrapper {
     id: number,
     options?: Types.TMDBLanguageOption & Types.TMDBPageOption
   ): Promise<Types.TMDBMovieLists> {
-    return await this.get<Types.TMDBMovieLists>(`/movie/${id}/lists`, { params: options });
+    return await this.get<Types.TMDBMovieLists>(`movie/${id}/lists`, { params: options });
   }
 
   /**
@@ -793,7 +922,7 @@ export class TMDB extends ApiWrapper {
     id: number,
     options?: Types.TMDBLanguageOption & Types.TMDBPageOption
   ): Promise<Types.TMDBRecommendations> {
-    return await this.get<Types.TMDBRecommendations>(`/movie/${id}/recommendations`, { params: options });
+    return await this.get<Types.TMDBRecommendations>(`movie/${id}/recommendations`, { params: options });
   }
 
   /**
@@ -805,7 +934,7 @@ export class TMDB extends ApiWrapper {
    * const releaseDates = await tmdb.getMovieReleaseDates(550);
    */
   async getMovieReleaseDates(id: number): Promise<Types.TMDBReleaseDates> {
-    return await this.get<Types.TMDBReleaseDates>(`/movie/${id}/release_dates`);
+    return await this.get<Types.TMDBReleaseDates>(`movie/${id}/release_dates`);
   }
 
   /**
@@ -821,7 +950,7 @@ export class TMDB extends ApiWrapper {
     id: number,
     options?: Types.TMDBLanguageOption & Types.TMDBPageOption
   ): Promise<Types.TMDBReviews> {
-    return await this.get<Types.TMDBReviews>(`/movie/${id}/reviews`, { params: options });
+    return await this.get<Types.TMDBReviews>(`movie/${id}/reviews`, { params: options });
   }
 
   /**
@@ -837,7 +966,7 @@ export class TMDB extends ApiWrapper {
     id: number,
     options?: Types.TMDBLanguageOption & Types.TMDBPageOption
   ): Promise<Types.TMDBSimilarMovies> {
-    return await this.get<Types.TMDBSimilarMovies>(`/movie/${id}/similar`, { params: options });
+    return await this.get<Types.TMDBSimilarMovies>(`movie/${id}/similar`, { params: options });
   }
 
   /**
@@ -849,7 +978,7 @@ export class TMDB extends ApiWrapper {
    * const movieTranslations = await tmdb.getMovieTranslations(550);
    */
   async getMovieTranslations(id: number): Promise<Types.TMDBTranslations> {
-    return await this.get<Types.TMDBTranslations>(`/movie/${id}/translations`);
+    return await this.get<Types.TMDBTranslations>(`movie/${id}/translations`);
   }
 
   /**
@@ -862,7 +991,7 @@ export class TMDB extends ApiWrapper {
    * const movieVideos = await tmdb.getMovieVideos(550);
    */
   async getMovieVideos(id: number, options?: Types.TMDBLanguageOption): Promise<Types.TMDBVideos> {
-    return await this.get<Types.TMDBVideos>(`/movie/${id}/videos`, { params: options });
+    return await this.get<Types.TMDBVideos>(`movie/${id}/videos`, { params: options });
   }
 
   /**
@@ -874,7 +1003,7 @@ export class TMDB extends ApiWrapper {
    * const watchProviders = await tmdb.getMovieWatchProviders(550);
    */
   async getMovieWatchProviders(id: number): Promise<Types.TMDBWatchProviders> {
-    return await this.get<Types.TMDBWatchProviders>(`/movie/${id}/watch/providers`);
+    return await this.get<Types.TMDBWatchProviders>(`movie/${id}/watch/providers`);
   }
 
   /**
@@ -885,7 +1014,7 @@ export class TMDB extends ApiWrapper {
    * const latestMovie = await tmdb.getLatestMovie();
    */
   async getLatestMovie(): Promise<Types.TMDBLatestMovie> {
-    return await this.get<Types.TMDBLatestMovie>('/movie/latest');
+    return await this.get<Types.TMDBLatestMovie>('movie/latest');
   }
 
   /**
@@ -899,7 +1028,7 @@ export class TMDB extends ApiWrapper {
   async getNowPlayingMovies(
     options?: Types.TMDBPageOption & Types.TMDBLanguageOption & Types.TMDBRegionOption
   ): Promise<Types.TMDBMoviesPlayingNow> {
-    return await this.get<Types.TMDBMoviesPlayingNow>('/movie/now_playing', { params: options });
+    return await this.get<Types.TMDBMoviesPlayingNow>('movie/now_playing', { params: options });
   }
 
   /**
@@ -911,7 +1040,7 @@ export class TMDB extends ApiWrapper {
    * const popularMovies = await tmdb.getPopularMovies();
    */
   async getPopularMovies(options?: Types.TMDBLanguageOption & Types.TMDBPageOption): Promise<Types.TMDBPopularMovies> {
-    return await this.get<Types.TMDBPopularMovies>('/movie/popular', { params: options });
+    return await this.get<Types.TMDBPopularMovies>('movie/popular', { params: options });
   }
 
   /**
@@ -925,7 +1054,7 @@ export class TMDB extends ApiWrapper {
   async getTopRatedMovies(
     options?: Types.TMDBPageOption & Types.TMDBLanguageOption & Types.TMDBRegionOption
   ): Promise<Types.TMDBTopRatedMovies> {
-    return await this.get<Types.TMDBTopRatedMovies>('/movie/top_rated', { params: options });
+    return await this.get<Types.TMDBTopRatedMovies>('movie/top_rated', { params: options });
   }
 
   /**
@@ -939,7 +1068,7 @@ export class TMDB extends ApiWrapper {
   async getUpcomingMovies(
     options?: Types.TMDBPageOption & Types.TMDBLanguageOption & Types.TMDBRegionOption
   ): Promise<Types.TMDBUpcomingMovies> {
-    return await this.get<Types.TMDBUpcomingMovies>('/movie/upcoming', { params: options });
+    return await this.get<Types.TMDBUpcomingMovies>('movie/upcoming', { params: options });
   }
 
   /**
@@ -962,7 +1091,7 @@ export class TMDB extends ApiWrapper {
       ...options
     };
 
-    const path = `/tv/${episodeSelection.tvShowID}/season/${episodeSelection.seasonNumber}/episode/${episodeSelection.episodeNumber}`;
+    const path = `tv/${episodeSelection.tvShowID}/season/${episodeSelection.seasonNumber}/episode/${episodeSelection.episodeNumber}`;
     return await this.get<Types.TMDBAppendToResponse<Omit<Types.TMDBEpisode, 'show_id'>, T, 'tvEpisode'>>(path, {
       params: combinedOptions
     });
@@ -981,7 +1110,7 @@ export class TMDB extends ApiWrapper {
     episodeID: number,
     options?: Types.TMDBChangeOption
   ): Promise<Types.TMDBChanges<Types.TMDBTvEpisodeChangeValue>> {
-    return await this.get<Types.TMDBChanges<Types.TMDBTvEpisodeChangeValue>>(`/tv/episode/${episodeID}/changes`, {
+    return await this.get<Types.TMDBChanges<Types.TMDBTvEpisodeChangeValue>>(`tv/episode/${episodeID}/changes`, {
       params: options
     });
   }
@@ -999,7 +1128,7 @@ export class TMDB extends ApiWrapper {
     episodeSelection: Types.TMDBEpisodeSelection,
     options?: Types.TMDBLanguageOption
   ): Promise<Types.TMDBTvEpisodeCredit> {
-    const path = `/tv/${episodeSelection.tvShowID}/season/${episodeSelection.seasonNumber}/episode/${episodeSelection.episodeNumber}/credits`;
+    const path = `tv/${episodeSelection.tvShowID}/season/${episodeSelection.seasonNumber}/episode/${episodeSelection.episodeNumber}/credits`;
     return await this.get<Types.TMDBTvEpisodeCredit>(path, { params: options });
   }
 
@@ -1012,7 +1141,7 @@ export class TMDB extends ApiWrapper {
    * const externalIds = await tmdb.getTvEpisodeExternalIds({ tvShowID: 1399, seasonNumber: 1, episodeNumber: 1 });
    */
   async getTvEpisodeExternalIds(episodeSelection: Types.TMDBEpisodeSelection): Promise<Types.TMDBExternalIds> {
-    const path = `/tv/${episodeSelection.tvShowID}/season/${episodeSelection.seasonNumber}/episode/${episodeSelection.episodeNumber}/external_ids`;
+    const path = `tv/${episodeSelection.tvShowID}/season/${episodeSelection.seasonNumber}/episode/${episodeSelection.episodeNumber}/external_ids`;
     return await this.get<Types.TMDBExternalIds>(path);
   }
 
@@ -1033,7 +1162,7 @@ export class TMDB extends ApiWrapper {
       include_image_language: options?.include_image_language?.join(','),
       language: options?.language
     };
-    const path = `/tv/${episodeSelection.tvShowID}/season/${episodeSelection.seasonNumber}/episode/${episodeSelection.episodeNumber}/images`;
+    const path = `tv/${episodeSelection.tvShowID}/season/${episodeSelection.seasonNumber}/episode/${episodeSelection.episodeNumber}/images`;
     return await this.get<Types.TMDBImages>(path, { params: computedOptions });
   }
 
@@ -1048,7 +1177,7 @@ export class TMDB extends ApiWrapper {
   async getTvEpisodeTranslations(
     episodeSelection: Types.TMDBEpisodeSelection
   ): Promise<Types.TMDBTvEpisodeTranslations> {
-    const path = `/tv/${episodeSelection.tvShowID}/season/${episodeSelection.seasonNumber}/episode/${episodeSelection.episodeNumber}/translations`;
+    const path = `tv/${episodeSelection.tvShowID}/season/${episodeSelection.seasonNumber}/episode/${episodeSelection.episodeNumber}/translations`;
     return await this.get<Types.TMDBTvEpisodeTranslations>(path);
   }
 
@@ -1069,7 +1198,7 @@ export class TMDB extends ApiWrapper {
       include_video_language: options?.include_video_language?.join(','),
       language: options?.language
     };
-    const path = `/tv/${episodeSelection.tvShowID}/season/${episodeSelection.seasonNumber}/episode/${episodeSelection.episodeNumber}/videos`;
+    const path = `tv/${episodeSelection.tvShowID}/season/${episodeSelection.seasonNumber}/episode/${episodeSelection.episodeNumber}/videos`;
     return await this.get<Types.TMDBVideos>(path, { params: computedOptions });
   }
 
@@ -1093,7 +1222,7 @@ export class TMDB extends ApiWrapper {
       ...options
     };
 
-    const path = `/tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}`;
+    const path = `tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}`;
     return await this.get<Types.TMDBAppendToResponse<Types.TMDBSeasonDetails, T, 'tvSeason'>>(path, {
       params: combinedOptions
     });
@@ -1112,7 +1241,7 @@ export class TMDB extends ApiWrapper {
     seasonSelection: Types.TMDBSeasonSelection,
     options?: Types.TMDBLanguageOption
   ): Promise<Types.TMDBAggregateCredits> {
-    const path = `/tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}/aggregate_credits`;
+    const path = `tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}/aggregate_credits`;
     return await this.get<Types.TMDBAggregateCredits>(path, { params: options });
   }
 
@@ -1129,7 +1258,7 @@ export class TMDB extends ApiWrapper {
     seasonId: number,
     options?: Types.TMDBChangeOption
   ): Promise<Types.TMDBChanges<Types.TMDBTvSeasonChangeValue>> {
-    return await this.get<Types.TMDBChanges<Types.TMDBTvSeasonChangeValue>>(`/tv/season/${seasonId}/changes`, {
+    return await this.get<Types.TMDBChanges<Types.TMDBTvSeasonChangeValue>>(`tv/season/${seasonId}/changes`, {
       params: options
     });
   }
@@ -1147,7 +1276,7 @@ export class TMDB extends ApiWrapper {
     seasonSelection: Types.TMDBSeasonSelection,
     options?: Types.TMDBLanguageOption
   ): Promise<Types.TMDBCredits> {
-    const path = `/tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}/credits`;
+    const path = `tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}/credits`;
     return await this.get<Types.TMDBCredits>(path, { params: options });
   }
 
@@ -1164,7 +1293,7 @@ export class TMDB extends ApiWrapper {
     seasonSelection: Types.TMDBSeasonSelection,
     options?: Types.TMDBLanguageOption
   ): Promise<Types.TMDBExternalIds> {
-    const path = `/tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}/external_ids`;
+    const path = `tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}/external_ids`;
     return await this.get<Types.TMDBExternalIds>(path, { params: options });
   }
 
@@ -1185,7 +1314,7 @@ export class TMDB extends ApiWrapper {
       include_image_language: options?.include_image_language?.join(','),
       language: options?.language
     };
-    const path = `/tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}/images`;
+    const path = `tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}/images`;
     return await this.get<Types.TMDBImages>(path, { params: computedOptions });
   }
 
@@ -1206,7 +1335,7 @@ export class TMDB extends ApiWrapper {
       include_video_language: options?.include_video_language?.join(','),
       language: options?.language
     };
-    const path = `/tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}/videos`;
+    const path = `tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}/videos`;
     return await this.get<Types.TMDBVideos>(path, { params: computedOptions });
   }
 
@@ -1223,7 +1352,7 @@ export class TMDB extends ApiWrapper {
     seasonSelection: Types.TMDBSeasonSelection,
     options?: Types.TMDBLanguageOption
   ): Promise<Types.TMDBTranslations> {
-    const path = `/tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}/translations`;
+    const path = `tv/${seasonSelection.tvShowID}/season/${seasonSelection.seasonNumber}/translations`;
     return await this.get<Types.TMDBTranslations>(path, { params: options });
   }
 
@@ -1246,7 +1375,7 @@ export class TMDB extends ApiWrapper {
       append_to_response: appendToResponse ? appendToResponse.join(',') : undefined,
       language: language
     };
-    return await this.get<Types.TMDBAppendToResponse<Types.TMDBTvShowDetails, T, 'tvShow'>>(`/tv/${id}`, {
+    return await this.get<Types.TMDBAppendToResponse<Types.TMDBTvShowDetails, T, 'tvShow'>>(`tv/${id}`, {
       params: options
     });
   }
@@ -1260,7 +1389,7 @@ export class TMDB extends ApiWrapper {
    * const alternativeTitles = await tmdb.getTvShowAlternativeTitles(1399);
    */
   async getTvShowAlternativeTitles(id: number): Promise<Types.TMDBAlternativeTitles> {
-    return await this.get<Types.TMDBAlternativeTitles>(`/tv/${id}/alternative_titles`);
+    return await this.get<Types.TMDBAlternativeTitles>(`tv/${id}/alternative_titles`);
   }
 
   /**
@@ -1276,7 +1405,7 @@ export class TMDB extends ApiWrapper {
     id: number,
     options?: Types.TMDBChangeOption
   ): Promise<Types.TMDBChanges<Types.TMDBTvShowChangeValue>> {
-    return await this.get<Types.TMDBChanges<Types.TMDBTvShowChangeValue>>(`/tv/${id}/changes`, { params: options });
+    return await this.get<Types.TMDBChanges<Types.TMDBTvShowChangeValue>>(`tv/${id}/changes`, { params: options });
   }
 
   /**
@@ -1288,7 +1417,7 @@ export class TMDB extends ApiWrapper {
    * const contentRatings = await tmdb.getTvShowContentRatings(1399);
    */
   async getTvShowContentRatings(id: number): Promise<Types.TMDBContentRatings> {
-    return await this.get<Types.TMDBContentRatings>(`/tv/${id}/content_ratings`);
+    return await this.get<Types.TMDBContentRatings>(`tv/${id}/content_ratings`);
   }
 
   /**
@@ -1301,7 +1430,7 @@ export class TMDB extends ApiWrapper {
    * const aggregateCredits = await tmdb.getTvShowAggregateCredits(1399);
    */
   async getTvShowAggregateCredits(id: number, options?: Types.TMDBLanguageOption): Promise<Types.TMDBAggregateCredits> {
-    return await this.get<Types.TMDBAggregateCredits>(`/tv/${id}/aggregate_credits`, { params: options });
+    return await this.get<Types.TMDBAggregateCredits>(`tv/${id}/aggregate_credits`, { params: options });
   }
 
   /**
@@ -1314,7 +1443,7 @@ export class TMDB extends ApiWrapper {
    * const tvShowCredits = await tmdb.getTvShowCredits(1399);
    */
   async getTvShowCredits(id: number, options?: Types.TMDBLanguageOption): Promise<Types.TMDBCredits> {
-    return await this.get<Types.TMDBCredits>(`/tv/${id}/credits`, { params: options });
+    return await this.get<Types.TMDBCredits>(`tv/${id}/credits`, { params: options });
   }
 
   /**
@@ -1327,7 +1456,7 @@ export class TMDB extends ApiWrapper {
    * const seasonDetails = await tmdb.getTvShowSeason(1399, 1);
    */
   async getTvShowSeason(tvId: number, seasonNumber: number): Promise<Types.TMDBSeasonDetails> {
-    return await this.get<Types.TMDBSeasonDetails>(`/tv/${tvId}/season/${seasonNumber}`);
+    return await this.get<Types.TMDBSeasonDetails>(`tv/${tvId}/season/${seasonNumber}`);
   }
 
   /**
@@ -1339,7 +1468,7 @@ export class TMDB extends ApiWrapper {
    * const episodeGroups = await tmdb.getTvShowEpisodeGroups(1399);
    */
   async getTvShowEpisodeGroups(id: number): Promise<Types.TMDBEpisodeGroups> {
-    return await this.get<Types.TMDBEpisodeGroups>(`/tv/${id}/episode_groups`);
+    return await this.get<Types.TMDBEpisodeGroups>(`tv/${id}/episode_groups`);
   }
 
   /**
@@ -1351,7 +1480,7 @@ export class TMDB extends ApiWrapper {
    * const externalIds = await tmdb.getTvShowExternalIds(1399);
    */
   async getTvShowExternalIds(id: number): Promise<Types.TMDBExternalIds> {
-    return await this.get<Types.TMDBExternalIds>(`/tv/${id}/external_ids`);
+    return await this.get<Types.TMDBExternalIds>(`tv/${id}/external_ids`);
   }
 
   /**
@@ -1368,7 +1497,7 @@ export class TMDB extends ApiWrapper {
       include_image_language: options?.include_image_language?.join(','),
       language: options?.language
     };
-    return await this.get<Types.TMDBImages>(`/tv/${id}/images`, { params: computedOptions });
+    return await this.get<Types.TMDBImages>(`tv/${id}/images`, { params: computedOptions });
   }
 
   /**
@@ -1380,7 +1509,7 @@ export class TMDB extends ApiWrapper {
    * const tvShowKeywords = await tmdb.getTvShowKeywords(1399);
    */
   async getTvShowKeywords(id: number): Promise<Types.TMDBKeywords> {
-    return await this.get<Types.TMDBKeywords>(`/tv/${id}/keywords`);
+    return await this.get<Types.TMDBKeywords>(`tv/${id}/keywords`);
   }
 
   /**
@@ -1396,7 +1525,7 @@ export class TMDB extends ApiWrapper {
     id: number,
     options?: Types.TMDBLanguageOption & Types.TMDBPageOption
   ): Promise<Types.TMDBRecommendations> {
-    return await this.get<Types.TMDBRecommendations>(`/tv/${id}/recommendations`, { params: options });
+    return await this.get<Types.TMDBRecommendations>(`tv/${id}/recommendations`, { params: options });
   }
 
   /**
@@ -1412,7 +1541,7 @@ export class TMDB extends ApiWrapper {
     id: number,
     options?: Types.TMDBLanguageOption & Types.TMDBPageOption
   ): Promise<Types.TMDBReviews> {
-    return await this.get<Types.TMDBReviews>(`/tv/${id}/reviews`, { params: options });
+    return await this.get<Types.TMDBReviews>(`tv/${id}/reviews`, { params: options });
   }
 
   /**
@@ -1424,7 +1553,7 @@ export class TMDB extends ApiWrapper {
    * const screenedTheatrically = await tmdb.getTvShowScreenedTheatrically(1399);
    */
   async getTvShowScreenedTheatrically(id: number): Promise<Types.TMDBScreenedTheatrically> {
-    return await this.get<Types.TMDBScreenedTheatrically>(`/tv/${id}/screened_theatrically`);
+    return await this.get<Types.TMDBScreenedTheatrically>(`tv/${id}/screened_theatrically`);
   }
 
   /**
@@ -1440,7 +1569,7 @@ export class TMDB extends ApiWrapper {
     id: number,
     options?: Types.TMDBLanguageOption & Types.TMDBPageOption
   ): Promise<Types.TMDBSimilarTvShows> {
-    return await this.get<Types.TMDBSimilarTvShows>(`/tv/${id}/similar`, { params: options });
+    return await this.get<Types.TMDBSimilarTvShows>(`tv/${id}/similar`, { params: options });
   }
 
   /**
@@ -1452,7 +1581,7 @@ export class TMDB extends ApiWrapper {
    * const tvShowTranslations = await tmdb.getTvShowTranslations(1399);
    */
   async getTvShowTranslations(id: number): Promise<Types.TMDBTranslations> {
-    return await this.get<Types.TMDBTranslations>(`/tv/${id}/translations`);
+    return await this.get<Types.TMDBTranslations>(`tv/${id}/translations`);
   }
 
   /**
@@ -1469,7 +1598,7 @@ export class TMDB extends ApiWrapper {
       include_video_language: options?.include_video_language?.join(','),
       language: options?.language
     };
-    return await this.get<Types.TMDBVideos>(`/tv/${id}/videos`, { params: computedOptions });
+    return await this.get<Types.TMDBVideos>(`tv/${id}/videos`, { params: computedOptions });
   }
 
   /**
@@ -1481,7 +1610,7 @@ export class TMDB extends ApiWrapper {
    * const watchProviders = await tmdb.getTvShowWatchProviders(1399);
    */
   async getTvShowWatchProviders(id: number): Promise<Types.TMDBWatchProviders> {
-    return await this.get<Types.TMDBWatchProviders>(`/tv/${id}/watch/providers`);
+    return await this.get<Types.TMDBWatchProviders>(`tv/${id}/watch/providers`);
   }
 
   /**
@@ -1492,7 +1621,7 @@ export class TMDB extends ApiWrapper {
    * const latestTvShow = await tmdb.getLatestTvShow();
    */
   async getLatestTvShow(): Promise<Types.TMDBLatestTvShows> {
-    return await this.get<Types.TMDBLatestTvShows>('/tv/latest');
+    return await this.get<Types.TMDBLatestTvShows>('tv/latest');
   }
 
   /**
@@ -1506,7 +1635,7 @@ export class TMDB extends ApiWrapper {
   async getTvShowsOnTheAir(
     options?: Types.TMDBPageOption & Types.TMDBLanguageOption & Types.TMDBTimezoneOption
   ): Promise<Types.TMDBOnTheAir> {
-    return await this.get<Types.TMDBOnTheAir>('/tv/on_the_air', { params: options });
+    return await this.get<Types.TMDBOnTheAir>('tv/on_the_air', { params: options });
   }
 
   /**
@@ -1520,7 +1649,7 @@ export class TMDB extends ApiWrapper {
   async getTvShowsAiringToday(
     options?: Types.TMDBPageOption & Types.TMDBLanguageOption & Types.TMDBTimezoneOption
   ): Promise<Types.TMDBTvShowsAiringToday> {
-    return await this.get<Types.TMDBTvShowsAiringToday>('/tv/airing_today', { params: options });
+    return await this.get<Types.TMDBTvShowsAiringToday>('tv/airing_today', { params: options });
   }
 
   /**
@@ -1534,7 +1663,7 @@ export class TMDB extends ApiWrapper {
   async getPopularTvShows(
     options?: Types.TMDBPageOption & Types.TMDBLanguageOption
   ): Promise<Types.TMDBPopularTvShows> {
-    return await this.get<Types.TMDBPopularTvShows>('/tv/popular', { params: options });
+    return await this.get<Types.TMDBPopularTvShows>('tv/popular', { params: options });
   }
 
   /**
@@ -1548,6 +1677,6 @@ export class TMDB extends ApiWrapper {
   async getTopRatedTvShows(
     options?: Types.TMDBPageOption & Types.TMDBLanguageOption
   ): Promise<Types.TMDBTopRatedTvShows> {
-    return await this.get<Types.TMDBTopRatedTvShows>('/tv/top_rated', { params: options });
+    return await this.get<Types.TMDBTopRatedTvShows>('tv/top_rated', { params: options });
   }
 }

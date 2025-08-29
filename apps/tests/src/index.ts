@@ -4,6 +4,7 @@ import { getFFprobeBinaryPath } from '@moon/ffprobe';
 import { getFlareSolverrBinaryPath } from '@moon/flaresolverr';
 import { context } from '@moon/context';
 import { config, encryptedConfig } from '@moon/config';
+import { TMDB } from 'packages/integrations/tmdb/dist';
 
 context.on('binaries:download:start', ({ version, name }) => {
   console.log(`Downloading ${name} v${version}...`);
@@ -40,6 +41,15 @@ async function bootstrap() {
 
   console.log('Config:', config);
   console.log('Encrypted Config:', encryptedConfig.getAll());
+
+  const tmdb = new TMDB(encryptedConfig.get('tmdb'));
+
+  const movie = await tmdb.searchMovie({ query: 'Inception', year: 2010 });
+  console.log(movie);
+
+  if (movie.total_results > 0) {
+    await tmdb.downloadPoster(movie.results[0].poster_path, 'w500', './downloads/posters/inception.jpg');
+  }
 }
 
 bootstrap();

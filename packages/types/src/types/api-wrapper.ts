@@ -58,9 +58,9 @@ export abstract class ApiWrapper {
    * @param params - An optional object containing query parameters.
    * @returns The fully constructed URL as a string.
    */
-  protected buildUrl(endpoint: string, params?: Record<string, any>): string {
+  protected buildUrl(endpoint: string, params?: Record<string, any>, isFull: boolean = false): string {
     // Create a new URL object for the API endpoint
-    const url = new URL(endpoint, this._config.baseUrl);
+    const url = new URL(endpoint, isFull ? undefined : this._config.baseUrl);
 
     // Append query parameters to the URL
     if (params) {
@@ -197,6 +197,42 @@ export abstract class ApiWrapper {
   protected async download(endpoint: string, options: ApiRequestOptions = {}): Promise<Blob | Buffer> {
     // Build the full URL for the API request
     const url = this.buildUrl(endpoint, options.params);
+
+    // Make the API request
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        ...this._config.defaultHeaders,
+        ...options.headers
+      }
+    });
+
+    // Check for errors
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    // Return the response as a Blob or Buffer
+    if (typeof window !== 'undefined') {
+      return await response.blob();
+    }
+
+    // Return the response as a Blob or Buffer
+    const buffer = await response.arrayBuffer();
+    return Buffer.from(buffer);
+  }
+
+  /**
+   * @brief Downloads a file from a given URL.
+   * @description This method performs a GET request to the specified full URL to download a file.
+   * @param fullURL - The full URL of the file to download.
+   * @param options - The options to include in the request.
+   * @returns The downloaded file as a Blob or Buffer.
+   * @throws An error if the API request fails.
+   */
+  protected async downloadFromURL(fullURL: string, options: ApiRequestOptions = {}): Promise<Blob | Buffer> {
+    // Build the full URL for the API request
+    const url = this.buildUrl(fullURL, options.params, true);
 
     // Make the API request
     const response = await fetch(url, {

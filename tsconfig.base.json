@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "commonjs",
+    "module": "NodeNext",
     "lib": ["ES2020", "DOM"],
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "jsx": "react-jsx",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

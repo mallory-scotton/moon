@@ -91,7 +91,7 @@ export const TMDBBackdropSize = {
   ORIGINAL: 'original'
 } as const;
 
-type TMDBBackdropSizes = (typeof TMDBBackdropSize)[keyof typeof TMDBBackdropSize];
+export type TMDBBackdropSizes = (typeof TMDBBackdropSize)[keyof typeof TMDBBackdropSize];
 
 export const TMDBLogoSize = {
   W45: 'w45',
@@ -103,7 +103,7 @@ export const TMDBLogoSize = {
   ORIGINAL: 'original'
 } as const;
 
-type TMDBLogoSizes = (typeof TMDBLogoSize)[keyof typeof TMDBLogoSize];
+export type TMDBLogoSizes = (typeof TMDBLogoSize)[keyof typeof TMDBLogoSize];
 
 export const TMDBPosterSize = {
   W92: 'w92',
@@ -116,7 +116,7 @@ export const TMDBPosterSize = {
   ORIGINAL: 'original'
 } as const;
 
-type TMDBPosterSizes = (typeof TMDBPosterSize)[keyof typeof TMDBPosterSize];
+export type TMDBPosterSizes = (typeof TMDBPosterSize)[keyof typeof TMDBPosterSize];
 
 export const TMDBProfileSize = {
   W45: 'w45',
@@ -125,7 +125,7 @@ export const TMDBProfileSize = {
   ORIGINAL: 'original'
 } as const;
 
-type TMDBProfileSizes = (typeof TMDBProfileSize)[keyof typeof TMDBProfileSize];
+export type TMDBProfileSizes = (typeof TMDBProfileSize)[keyof typeof TMDBProfileSize];
 
 export const TMDBStillSize = {
   W92: 'w92',
@@ -134,7 +134,7 @@ export const TMDBStillSize = {
   ORIGINAL: 'original'
 } as const;
 
-type TMDBStillSizes = (typeof TMDBStillSize)[keyof typeof TMDBStillSize];
+export type TMDBStillSizes = (typeof TMDBStillSize)[keyof typeof TMDBStillSize];
 
 export const TMDBChangeKey = {
   ADULT: 'adult',

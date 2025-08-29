@@ -118,3 +118,25 @@ describe('Language Extraction', () => {
     }
   });
 });
+
+/**
+ * @brief Multi-language extraction test cases
+ * @description This section contains test cases for extracting multiple languages from filenames.
+ */
+const MULTI_CASES: string[] = [
+  'Ouija.Origin.of.Evil.2016.MULTi.TRUEFRENCH.1080p.BluRay.x264-MELBA',
+  'Showdown.In.Little.Tokyo.1991.MULTI.VFQ.VFF.DTSHD-MASTER.1080p.BluRay.x264-ZombiE',
+  'The.Polar.Express.2004.MULTI.VF2.1080p.BluRay.x264-PopHD',
+  'Star.Trek.Der.Film.1979.German.DL.2160p.UHD.BluRay.HEVC-UNTHEVC'
+];
+
+/**
+ * @brief Multi-language extraction test cases
+ * @description This section contains test cases for extracting multiple languages from filenames.
+ */
+describe('Multi-Language Extraction', () => {
+  it.each(MULTI_CASES)('should extract multiple languages from %p', (input) => {
+    const result = parseFilename(input, false);
+    expect(result.multi).toBe(true);
+  });
+});

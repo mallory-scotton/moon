@@ -99,6 +99,7 @@ export interface BaseFilenameParseResult {
   year?: number;
   part?: number;
   languages?: Language[];
+  multi?: boolean;
 }
 
 /**

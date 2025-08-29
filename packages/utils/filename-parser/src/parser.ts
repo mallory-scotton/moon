@@ -38,7 +38,8 @@ export function parseFilename(filename: string, isTv: boolean): FilenameParseRes
     audioCodec: utils.getValue(filename, rules.AUDIO_CODEC_EXPS) ?? undefined,
     videoCodec: utils.getValue(filename, rules.VIDEO_CODEC_EXPS) ?? undefined,
     edition: utils.getFields(withoutTitle, rules.EDITION_EXPS, false),
-    languages: languages
+    languages: languages,
+    multi: languages.includes('multi')
   } as FilenameParseResult);
 }
 

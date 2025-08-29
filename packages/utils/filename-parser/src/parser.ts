@@ -14,11 +14,24 @@ import * as rules from './rules';
 export function parseFilename(filename: string, isTv: true): TvFilenameParseResult;
 export function parseFilename(filename: string, isTv: false): BaseFilenameParseResult;
 export function parseFilename(filename: string, isTv: boolean): FilenameParseResult {
+  // Parse the title and year from the filename
+  const parsedTitle = utils.parseTitleAndYear(filename);
+  const withoutTitle = filename.replace(/\./g, ' ').replace(parsedTitle.title, '').toLowerCase();
+
+  // Initialize variables for title and year
+  let title: FilenameParseResult['title'] = parsedTitle.title ?? undefined;
+  let year: FilenameParseResult['year'] = parsedTitle.year ?? undefined;
+
+  // Return the filtered result
   return utils.filterEmpty({
+    title: title,
+    year: year,
     audioChannels: utils.getValue(filename, rules.AUDIO_CHANNELS_EXPS) ?? undefined,
     audioCodec: utils.getValue(filename, rules.AUDIO_CODEC_EXPS) ?? undefined,
-    videoCodec: utils.getValue(filename, rules.VIDEO_CODEC_EXPS) ?? undefined
-  });
+    videoCodec: utils.getValue(filename, rules.VIDEO_CODEC_EXPS) ?? undefined,
+    edition: utils.getFields(withoutTitle, rules.EDITION_EXPS, false),
+    languages: utils.getFields(withoutTitle, rules.LANGUAGE_EXPS, true)
+  } as FilenameParseResult);
 }
 
 /**

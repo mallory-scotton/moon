@@ -6,15 +6,29 @@
  * @returns The first captured group from the matching regex, or null if no match is found.
  */
 export function getSource(text: string, regexes: Record<string, RegExp>): string | null {
+  const matchs: RegExpMatchArray[] = [];
+
   // Iterate over each regex in the record
   for (const [_, regex] of Object.entries(regexes)) {
     // Try to match the text against the regex
     const match = text.match(regex);
     // If a match is found, return the first captured group
     if (match) {
-      return match[0];
+      matchs.push(match);
     }
   }
+
+  // Get the first match in the string
+  let index = text.length;
+  let firstMatch: RegExpMatchArray | undefined;
+  for (const match of matchs) {
+    const matchIndex = match.index;
+    if (matchIndex !== undefined && matchIndex < index) {
+      index = matchIndex;
+      firstMatch = match;
+    }
+  }
+
   // If no match is found, return null
-  return null;
+  return firstMatch ? firstMatch[0] : null;
 }

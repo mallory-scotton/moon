@@ -92,7 +92,7 @@ export interface BaseFilenameParseResult {
   resolution?: Resolution;
   videoCodec?: VideoCodec;
   edition?: Edition;
-  source?: Source;
+  sources?: Source;
   provider?: Provider;
   complete?: boolean;
   title?: string;

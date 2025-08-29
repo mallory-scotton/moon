@@ -22,6 +22,14 @@ export function parseFilename(filename: string, isTv: boolean): FilenameParseRes
   let title: FilenameParseResult['title'] = parsedTitle.title ?? undefined;
   let year: FilenameParseResult['year'] = parsedTitle.year ?? undefined;
 
+  // Extract languages from the filename
+  let languages = utils.getFields(withoutTitle, rules.LANGUAGE_EXPS, true);
+
+  // Ensure at least English is included
+  if (languages.length === 0 || (languages.includes('multi') && !languages.includes('english'))) {
+    languages.push('english');
+  }
+
   // Return the filtered result
   return utils.filterEmpty({
     title: title,
@@ -30,7 +38,7 @@ export function parseFilename(filename: string, isTv: boolean): FilenameParseRes
     audioCodec: utils.getValue(filename, rules.AUDIO_CODEC_EXPS) ?? undefined,
     videoCodec: utils.getValue(filename, rules.VIDEO_CODEC_EXPS) ?? undefined,
     edition: utils.getFields(withoutTitle, rules.EDITION_EXPS, false),
-    languages: utils.getFields(withoutTitle, rules.LANGUAGE_EXPS, true)
+    languages: languages
   } as FilenameParseResult);
 }
 
